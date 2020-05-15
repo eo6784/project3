@@ -1,0 +1,34 @@
+---
+title: Fancy Initials
+author: Elizabeth Oh
+date: '2020-05-15'
+slug: fancy-initials
+categories: []
+tags: []
+description: ''
+---
+
+Here are some fancy initials
+
+```{python}
+    
+print("   EEEEEEEEEEEE        HH        HH        OOOOOOOOOOOO        \n   EEEEEEEEEEEE        HH        HH        OOOOOOOOOOOO        \n   EE                  HH        HH        OO        OO        \n   EE                  HH        HH        OO        OO        \n   EEEEEEEEEEEE        HHHHHHHHHHHH        OO        OO        \n   EEEEEEEEEEEE        HHHHHHHHHHHH        OO        OO        \n   EE                  HH        HH        OO        OO        \n   EE                  HH        HH        OO        OO        \n   EEEEEEEEEEEE   ..   HH        HH   ..   OOOOOOOOOOOO   ..   \n   EEEEEEEEEEEE   ..   HH        HH   ..   OOOOOOOOOOOO   ..   \n")
+
+reaction = "very cool"
+```
+
+variables translated to r
+```{r}
+#this is an r code chunk
+library(reticulate)
+number = 10
+print(py$reaction)
+```
+
+variables translated back to python
+```{python}
+    
+print("I give this display a " + str(int(r.number)) + " out of 10")
+```
+
+![](/img/bongo.png)

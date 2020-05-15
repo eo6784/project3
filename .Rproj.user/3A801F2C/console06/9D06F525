@@ -1,0 +1,10 @@
+[K]0;eo6784@educcomp02: ~/website_eo6784[01;32meo6784@educcomp02[00m:[01;34m~/website_eo6784[00m$ [K]0;eo6784@educcomp02: ~/website_eo6784[01;32meo6784@educcomp02[00m:[01;34m~/website_eo6784[00m$ ls
+config.toml  [0m[01;34mcontent[0m  index.Rmd  [01;34mpublic[0m  [01;34mstatic[0m  [01;34mthemes[0m  time.csv  trend.csv  website_eo6784.Rproj
+]0;/stor/home/eo6784/website_eo6784]0;eo6784@educcomp02: ~/website_eo6784[01;32meo6784@educcomp02[00m:[01;34m~/website_eo6784[00m$ get init[K[K[K[K[K[K[Kit init
+Initialized empty Git repository in /stor/home/eo6784/website_eo6784/.git/
+]0;/stor/home/eo6784/website_eo6784]0;eo6784@educcomp02: ~/website_eo6784[01;32meo6784@educcomp02[00m:[01;34m~/website_eo6784[00m$ ls -a
+[0m[01;34m.[0m   config.toml  [01;34m.git[0m       [01;34mpublic[0m       [01;34mstatic[0m  time.csv   website_eo6784.Rproj
+[01;34m..[0m  [01;34mcontent[0m      index.Rmd  [01;34m.Rproj.user[0m  [01;34mthemes[0m  trend.csv
+]0;/stor/home/eo6784/website_eo6784]0;eo6784@educcomp02: ~/website_eo6784[01;32meo6784@educcomp02[00m:[01;34m~/website_eo6784[00m$ ls
+config.toml  [0m[01;34mcontent[0m  index.Rmd  [01;34mpublic[0m  [01;34mstatic[0m  [01;34mthemes[0m  time.csv  trend.csv  website_eo6784.Rproj
+]0;/stor/home/eo6784/website_eo6784]0;eo6784@educcomp02: ~/website_eo6784[01;32meo6784@educcomp02[00m:[01;34m~/website_eo6784[00m$ gt[Kit add .

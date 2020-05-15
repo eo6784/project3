@@ -1,0 +1,245 @@
+---
+title: "Project 1: Exploratory Data Analysis"
+author: "Elizabeth Oh (eo6784)"
+date: "3/15/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = "center", warning = F, message = F,
+tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
+library(tidyverse)
+library(ggplot2)
+```
+
+# Modeling
+
+##0. Introduction
+```{r}
+install.packages("fivethirtyeight")
+library(fivethirtyeight)
+data()
+
+?fivethirtyeight::infert
+head(infert)
+
+abortData <- select(infert, -pooled.stratum,-stratum)
+abortData$tfinduced<-abortData$induced <1
+abortData$tfspontaneous <- abortData$spontaneous <1
+head(abortData)
+```
+The dataset I will be using is from 'infert' from package 'fivethirtyeight'. This data contains information about infertility after spontaneous and indiced abortions. As a woman I think it is important to know what effects the decisions I make and the options that are availble will have on my body in the long run. 
+
+I have removed some variables I wasn't interested in and saved the data in 'abortData'. 'abortData' includes the variables 'education', 'age', 'parity', 'induced', and 'spontaneous'. 'education' is the categorical level of education each subject recieved. 'age' is the age of the female the data was collected from at the time of collection. 'parity' is the number of  successful  births that woman has had. 'induced' indicates how many induced abortions the subject has undergone. 'spontaneous' holds the number of spontaneous abortions that occured for that subject. Finally, 'tfinduced' and 'tfspontaneous' are manipulated binary response data that indicates whether the subject has undergone an induced abortion before or spontaneous abortions before respectively. 
+
+There are 248 observations or subjects. 
+
+##1. MANOVA/ANOVA
+```{r}
+ggplot(abortData, aes(x = parity, y = spontaneous)) + geom_point(alpha = .5) + geom_density_2d(h=2) + coord_fixed() + facet_wrap(~education)
+
+
+man1<-manova(cbind(parity,spontaneous)~education, data=abortData)
+summary(man1)
+
+summary.aov(man1)
+abortData%>%group_by(education)%>%summarize(mean(parity),mean(spontaneous))
+pairwise.t.test(abortData$parity, abortData$education, p.adj="none")
+```
+A one-way MANOVA was conducted to determine the effect of education level (0-5yrs, 6-11yrs, 12+ yrs) on two dependent variables (parity, spontaneous).
+Examination of bivariate density plots for each group revealed that this was not multivariate normality. It is likely that the assumptions of multivariate normality has not been met. 
+
+Significant differences were found among the three education levels for at least one of the dependent variables, Pillali trace = 0.20121, pseudo F(4,490)=13.703, p<0.0001.
+
+Univariate ANOVAs for each dependent variable were conducted as follow-up tests to the MANOVA, using the Bonferroni method for controlling Type I error rates for multiple
+comparisons. The univariate ANOVA for parity was also significant, F(2,245),p<0.0001. The univariate ANOVA for spontaneous abortions was not significant, F(2,245) , p=0.4872.
+
+Post hoc analysis was performed conducting pairwise comparisons to determine which education level differed in parity and spontaneous abortions. All three education levels were found not to differ significantly from each other in terms of parity and induced abortions after adjusting for multiple comparisons (bonferroni α = 0.5/6 = 0.083). Only 0-5yrs and 6-11yrs appeared to differ significantly.
+
+
+##2. Randomization test
+```{r}
+ggplot(abortData,aes(spontaneous,fill=tfinduced))+geom_histogram(bins=6.5)+facet_wrap(~tfinduced,ncol=2)+theme(legend.position="none")
+
+mean(abortData[abortData$tfinduced==FALSE,]$spontaneous)-mean(abortData[abortData$tfinduced==TRUE,]$spontaneous)
+
+rand_dist<-vector()
+for(i in 1:5000){
+new<-data.frame(spontaneous=sample(abortData$spontaneous),induced=abortData$tfinduced)
+rand_dist[i]<-mean(new[new$induced==FALSE,]$spontaneous)-
+mean(new[new$induced==TRUE,]$spontaneous)}
+hist(rand_dist,main="",ylab=""); abline(v = -0.372361,col="red")
+
+mean(rand_dist>0.372361 | rand_dist< -0.372361)
+
+
+```
+H0: The mean of spontaneous abortions is the same for women who have undergone induced abortions and those who have not. 
+HA: The mean of spontaneous abortions is not the same for women who have undergone induced abortions and those who have not.
+
+According to this randomization test, we reject the null hypotyesis as p < 0.05, meaning that the mean of spontaneous abortions is not the same for women who have undergone induced abortions and those who have not. 
+
+##3. Linear Regression Model
+```{r}
+fit<-lm(spontaneous ~ age + induced, data=abortData)
+summary(fit)
+
+resids<-lm(spontaneous~age + induced, data=abortData)$residuals
+ggplot()+geom_histogram(aes(resids),bins=10)
+fitted<-lm(spontaneous~age + induced, data=abortData)$fitted.values
+ggplot()+geom_point(aes(resids,fitted))
+
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color='red')
+
+resids<-fit$residuals
+fitvals<-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color='red')
+
+ggplot()+geom_histogram(aes(resids), bins=20)
+
+library(sandwich); library(lmtest)
+bptest(fit)
+summary(fit)$coef[,1:2]
+coeftest(fit, vcov = vcovHC(fit))[,1:2]
+
+(sum((abortData$spontaneous-mean(abortData$spontaneous))^2)-sum(fit$residuals^2))/sum((abortData$spontaneous-mean(abortData$spontaneous))^2)
+```
+Controlling for induced abortions, there is not a significant effect of age on spontaneous abortions, t=-1.843, df = 245, p = 0.06655. However, controlling for age, there is a significant effect of induced abortions on spontaneous abortions. For every one unit increase of induced abortions, spontaneous abortions increases 0.39123 abortions on average, t=4.279, df = 245, p <0.001.
+
+The assumptions of linearity, normality, and homoskedasticity are all not applicable according to the graphs. 
+
+All the standard errors decreased when recomputed with corrected SEs. It is significant because this data presents a violation of homoskedasticity. 
+
+The proportion of the variation in spontaneous abortions that can be explained by the overall model with all predicters at once is 0.0761. 
+
+##4. Bootstrapped Standard Errors
+```{r}
+samp_distn<-replicate(5000, {
+boot_dat <- sample_frac(abortData, replace=T) 
+fit <- lm(spontaneous~age + induced, data=boot_dat) 
+coef(fit) 
+})
+
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+
+```
+The bootstrapped SEs are less than the original SEs but greater than the corrected robust SEs.
+
+##5. Logistic Regression
+```{r}
+fit<-glm(tfspontaneous~parity+induced,data=abortData,family=binomial(link="logit"))
+coeftest(fit)
+exp(coef(fit))
+
+prob<-predict(fit,type="response")
+pred<-ifelse(prob>.5,1,0)
+table(prediction=pred, truth=abortData$tfspontaneous)%>%addmargins
+(54+112)/248 #accuracy
+112/141 #tpr
+54/107 #tnr
+54/83 #ppv
+
+abortData$logit<-predict(fit,type="link")
+abortData%>%ggplot()+geom_density(aes(logit,color=tfspontaneous,fill=tfspontaneous), alpha=.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab("logit (log-odds)")+
+  geom_rug(aes(logit,color=tfspontaneous))+
+  geom_text(x=-2,y=.07,label="TN = 29")+
+  geom_text(x=-1.75,y=.008,label="FN = 54")+
+  geom_text(x=1,y=.006,label="FP = 53")+
+  geom_text(x=2,y=.07,label="TP = 112")
+
+library(plotROC)
+
+
+ROCplot<-ggplot(abortData)+geom_roc(aes(d=tfspontaneous,m=prob), n.cuts=0) 
+
+ROCplot
+calc_auc(ROCplot)
+
+library(pROC)
+
+class_diag <- function(probs,truth){
+#CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV
+tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+#CALCULATE EXACT AUC
+ord<-order(probs, decreasing=TRUE)
+probs <- probs[ord]; truth <- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth))
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+n <- length(TPR)
+auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,auc)
+} 
+
+probs<-predict(fit,type="response")
+class_diag(probs,abortData$tfspontaneous)
+
+set.seed(1234)
+k=10
+data<-abortData[sample(nrow(abortData)),] 
+folds<-cut(seq(1:nrow(abortData)),breaks=k,labels=F) 
+diags<-NULL
+for(i in 1:k){
+train<-data[folds!=i,]
+test<-data[folds==i,]
+truth<-test$tfspontaneous
+fit<-glm(tfspontaneous~(.)^2,data=abortData,family="binomial")
+probs<-predict(fit,newdata = test,type="response")
+diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)
+```
+Controlling for induced abortions, parity has a significant negative impact on if spontaneous abortions has occured. Controlling for parity, induced abortions has a significant positive impact on if spontaneous abortions has occured. 
+
+Interpretation of the coefficients are that the intercept shows the odds for spontaneous abortion when parity = 0 and induced abortion = 0 is 3.6969766. Controlling for induced abortions, for each additional successful birth (parity), the odds of an spontaneous abortion increase by a factor of 0.4068277 (significant). Controlling for parity, for each additional induced abortion, the odds of a spontaneous abortion increase by a factor of 4.8874659.
+
+According to the confusion matrix, the overall accuracy (the proportion of correctly predicted cases) is 0.6693548, the sensitivity(the proportion of the occurance of spontaneous abortions correctly predicted) is 0.7943262, the specificity (the proportion of the spontaneous abortions not occuring correctly predicted) is 0.5046729, and precision (the proportion of predictions for spontaneous abortions occuring and actually having occured) is 0.6506024.
+
+According to the ROC curve and the AUC calcualtion, on average, 75.65% of the time a subject with a higher predicted probability for spontaneous abortions will have spontaneous abortions. 
+
+Though it is a little odd, I got 1 for average out of sample Accuracy, Sensitivity, and Recall. This means both insample and out of sample performance is amazing and we are not overfitting. 
+
+
+##6. Prediction and LASSO
+```{r}
+library(glmnet)
+y<-as.matrix(abortData$tfspontaneous)
+x<-model.matrix(tfspontaneous~.,data=select(abortData, -tfinduced, -spontaneous, -logit))[,-1]
+x <- scale(x)
+head(x)
+
+cv<-cv.glmnet(x,y,family="binomial")
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se)
+coef(lasso)
+
+set.seed(1234)
+k=10
+data <- abortData %>% sample_frac
+folds <- ntile(1:nrow(data),n=10)
+diags<-NULL
+for(i in 1:k){
+train <- data[folds!=i,]
+test <- data[folds==i,]
+truth <- test$tfspontaneous
+fit <- glm(tfspontaneous~.,data=train, family="binomial")
+probs <- predict(fit, newdata=test, type="response")
+diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+
+```
+First, I removed variables that were redundant (generated only to fulfill binary type data for previous section) and extraneous data(logit).
+
+Interestingly, all variables except 'education 6-11yrs' was retained. This means that 'education12+yrs', 'age', 'parity', 'induced', and 'case'.
+
+Again the accuracy was 1 meaning it also is a very good fit. I am unsure which is considered better or if this is an error/bad data for Lasso and Logistic Regression.
+```{R}

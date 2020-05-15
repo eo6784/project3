@@ -1,0 +1,22 @@
+---
+title: Python is Amazing
+author: Elizabeth Oh
+date: '2020-05-15'
+slug: what-i-love-in-python
+categories: []
+tags: []
+description: ''
+---
+
+I started off learning Java in high school. Though I loved coding and I found that much of it made sense, I hated how tedious it was. The number of times I got errors for a missing a curly bracket still really makes me frustrated. Python is a lot simpler and gets rid of all those errors. Also, with the right program for coding it will even make your job easier by giving suggestions for variable and class names you have already defined (much like R).
+
+Some projects I've worked in using python are developing an analog version of the game Adventure from Atari and changing it to letting someone wander around my home. 
+
+```{python}
+
+```
+
+
+![](/img/adventure.JPG)
+
+It is really cool! I hope one day I can learn to design more graphically pleasing game using python or R!

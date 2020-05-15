@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Elizabeth Oh" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="../img/favicon.ico">
+    <title>Project 1: Exploratory Data Analysis</title>
+    <meta name="generator" content="Hugo 0.70.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../blog/">BLOG</a></li>
+        
+        <li><a href="../projects/">PROJECTS</a></li>
+        
+        <li><a href="../resume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../project1/">Project 1: Exploratory Data Analysis</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<pre class="r"><code># Data sets
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(tibble)
+install.packages(&quot;cluster&quot;)
+library(cluster)
+library(tidyverse)
+
+install.packages(&quot;fivethirtyeight&quot;)
+library(fivethirtyeight)
+data()
+
+# setup working directory and read files
+setwd(&quot;~/Elizabeth Oh/Homework/&quot;)
+time &lt;- read.csv(file = &quot;time.csv&quot;)
+trend &lt;- read.csv(file = &quot;trend.csv&quot;)
+
+glimpse(time)</code></pre>
+<pre><code>## Observations: 53
+## Variables: 24
+## $ date              &lt;fct&gt; 2020-01-20, 2020-01-21, 2020-01-22, 2020-01-23, 202…
+## $ time              &lt;int&gt; 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,…
+## $ test              &lt;int&gt; 1, 1, 4, 22, 27, 27, 51, 61, 116, 187, 246, 312, 37…
+## $ negative          &lt;int&gt; 0, 0, 3, 21, 25, 25, 47, 56, 97, 155, 199, 245, 289…
+## $ confirmed         &lt;int&gt; 1, 1, 1, 1, 2, 2, 3, 4, 4, 4, 6, 11, 12, 15, 15, 16…
+## $ released          &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ deceased          &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Seoul             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3, 4, 4, 5, 5, 5, 5, …
+## $ Busan             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Daegu             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Incheon           &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ Gwangju           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, …
+## $ Daejeon           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Ulsan             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Sejong            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Gyeonggi.do       &lt;int&gt; 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 5, 6, 8, 8, 8, 10,…
+## $ Gangwon.do        &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Chungcheongbuk.do &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Chungcheongnam.do &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Jeollabuk.do      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, …
+## $ Jeollanam.do      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Gyeongsangbuk.do  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Gyeongsangnam.do  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Jeju.do           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</code></pre>
+<pre class="r"><code>glimpse(trend)</code></pre>
+<pre><code>## Observations: 96
+## Variables: 5
+## $ date        &lt;fct&gt; 2019-12-07, 2019-12-08, 2019-12-09, 2019-12-10, 2019-12-1…
+## $ cold        &lt;dbl&gt; 0.12408, 0.11863, 0.16308, 0.13981, 0.13972, 0.13954, 0.1…
+## $ flu         &lt;dbl&gt; 0.24699, 0.25390, 0.47880, 0.40789, 0.39007, 0.38226, 0.4…
+## $ pneumonia   &lt;dbl&gt; 0.22144, 0.19617, 0.33180, 0.30671, 0.30299, 0.30526, 0.2…
+## $ coronavirus &lt;dbl&gt; 0.01309, 0.00836, 0.01272, 0.01881, 0.01854, 0.01990, 0.0…</code></pre>
+<p>The two datasets I chose were from the website <a href="https://www.kaggle.com/kimjihoo/coronavirusdataset#trend.csv" class="uri">https://www.kaggle.com/kimjihoo/coronavirusdataset#trend.csv</a>. This website provided data concerning coronavirus, its spread, and naver searches related to coronavirus organized by date. I extracted two datasets from the several options. The first dataset contained date organized data about the number of cases in Korea while the second contained date organized data on Naver searches (Korea’s equivilant to Google) related to COVID-19 and its symptoms. I chose to these datasets because I was interested in seeing the correlation between realtime data of cases in Korea and the public reaction and relative panic about the situation.</p>
+<p>There are 24 variables in the dataset “time”. Important variables from this dataset include “date” which records which date the rest of the data was collected,“test” representing the accumulated number of COVID-19 tests given so far, “confirmed” representing the accumulated number or confirmed cases, and “deceased” representing the accumulated number of deceased due to the disease. There are 5 variables in the dataset “trend”. Important variables from this dataset include “date” which allows us to join the two datasets,“coronavirus” representing the proportion of searches on naver including the word coronavirus, and “flu” representing the proportion of searches on naver including the word flu.</p>
+<p>I will be joining these datasets to compare data and visualize the data. I am expecting to see a correlations between the spread of coronavirus in Korea and the public reaction of searching for coronavirus on Naver. However, I am unsure of how it will compare to the search of flu in this period of time as well.</p>
+</div>
+<div id="tidying-rearranging-widelong" class="section level2">
+<h2>Tidying: Rearranging Wide/Long</h2>
+<pre class="r"><code># demonstrating use of pivot
+
+time_longer &lt;- time %&gt;% pivot_longer(c(&quot;Seoul&quot;, &quot;Busan&quot;, &quot;Daegu&quot;, 
+    &quot;Incheon&quot;, &quot;Gwangju&quot;, &quot;Daejeon&quot;, &quot;Ulsan&quot;, &quot;Sejong&quot;, &quot;Gyeonggi.do&quot;, 
+    &quot;Gangwon.do&quot;, &quot;Chungcheongbuk.do&quot;, &quot;Chungcheongnam.do&quot;, &quot;Jeollabuk.do&quot;, 
+    &quot;Jeollanam.do&quot;, &quot;Gyeongsangbuk.do&quot;, &quot;Gyeongsangnam.do&quot;, &quot;Jeju.do&quot;), 
+    names_to = &quot;location&quot;, values_to = &quot;region_confirmed&quot;)
+head(time_longer)</code></pre>
+<pre><code>## # A tibble: 6 x 9
+##   date   time  test negative confirmed released deceased location
+##   &lt;fct&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;     &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;   
+## 1 2020…    16     1        0         1        0        0 Seoul   
+## 2 2020…    16     1        0         1        0        0 Busan   
+## 3 2020…    16     1        0         1        0        0 Daegu   
+## 4 2020…    16     1        0         1        0        0 Incheon 
+## 5 2020…    16     1        0         1        0        0 Gwangju 
+## 6 2020…    16     1        0         1        0        0 Daejeon 
+## # … with 1 more variable: region_confirmed &lt;int&gt;</code></pre>
+<pre class="r"><code>time_wider &lt;- time_longer %&gt;% pivot_wider(names_from = &quot;location&quot;, 
+    values_from = &quot;region_confirmed&quot;)
+head(time_wider)</code></pre>
+<pre><code>## # A tibble: 6 x 24
+##   date   time  test negative confirmed released deceased Seoul Busan Daegu
+##   &lt;fct&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;     &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 2020…    16     1        0         1        0        0     0     0     0
+## 2 2020…    16     1        0         1        0        0     0     0     0
+## 3 2020…    16     4        3         1        0        0     0     0     0
+## 4 2020…    16    22       21         1        0        0     0     0     0
+## 5 2020…    16    27       25         2        0        0     0     0     0
+## 6 2020…    16    27       25         2        0        0     0     0     0
+## # … with 14 more variables: Incheon &lt;int&gt;, Gwangju &lt;int&gt;, Daejeon &lt;int&gt;,
+## #   Ulsan &lt;int&gt;, Sejong &lt;int&gt;, Gyeonggi.do &lt;int&gt;, Gangwon.do &lt;int&gt;,
+## #   Chungcheongbuk.do &lt;int&gt;, Chungcheongnam.do &lt;int&gt;, Jeollabuk.do &lt;int&gt;,
+## #   Jeollanam.do &lt;int&gt;, Gyeongsangbuk.do &lt;int&gt;, Gyeongsangnam.do &lt;int&gt;,
+## #   Jeju.do &lt;int&gt;</code></pre>
+<p>Becaue my datasets were already tidy, I demonstrated my ability to use pivot_longer() on the dataset time and saved it into the dataset “time_longer”. This made the dataset awkward to use with the dataset “trend”“, so I tidied it into”time_wider“, bringing each date’s data into one row, by using pivot_wider().</p>
+</div>
+<div id="joiningmerging" class="section level2">
+<h2>Joining/Merging</h2>
+<pre class="r"><code>corona_kr &lt;- full_join(time, trend)
+glimpse(corona_kr)</code></pre>
+<pre><code>## Observations: 97
+## Variables: 28
+## $ date              &lt;chr&gt; &quot;2020-01-20&quot;, &quot;2020-01-21&quot;, &quot;2020-01-22&quot;, &quot;2020-01-…
+## $ time              &lt;int&gt; 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,…
+## $ test              &lt;int&gt; 1, 1, 4, 22, 27, 27, 51, 61, 116, 187, 246, 312, 37…
+## $ negative          &lt;int&gt; 0, 0, 3, 21, 25, 25, 47, 56, 97, 155, 199, 245, 289…
+## $ confirmed         &lt;int&gt; 1, 1, 1, 1, 2, 2, 3, 4, 4, 4, 6, 11, 12, 15, 15, 16…
+## $ released          &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ deceased          &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Seoul             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3, 4, 4, 5, 5, 5, 5, …
+## $ Busan             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Daegu             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Incheon           &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ Gwangju           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, …
+## $ Daejeon           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Ulsan             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Sejong            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Gyeonggi.do       &lt;int&gt; 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 5, 6, 8, 8, 8, 10,…
+## $ Gangwon.do        &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Chungcheongbuk.do &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Chungcheongnam.do &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Jeollabuk.do      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, …
+## $ Jeollanam.do      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Gyeongsangbuk.do  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Gyeongsangnam.do  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ Jeju.do           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ cold              &lt;dbl&gt; 0.19217, 0.22462, 0.23808, 0.30308, 0.34689, 0.7088…
+## $ flu               &lt;dbl&gt; 0.70343, 0.59789, 0.56661, 0.55625, 0.40226, 0.3974…
+## $ pneumonia         &lt;dbl&gt; 3.63716, 4.31987, 3.66416, 3.18035, 2.48156, 3.4092…
+## $ coronavirus       &lt;dbl&gt; 20.69610, 35.33284, 29.74474, 100.00000, 86.11541, …</code></pre>
+<p>I used a full join because both datasets shared the variable “date”. This brought my joined dataset to a wopping 97 observations and I saved this as “corona_kr”.</p>
+</div>
+<div id="wrangling" class="section level2">
+<h2>Wrangling</h2>
+<pre class="r"><code># select()
+corona_kr &lt;- corona_kr %&gt;% select(date, test, confirmed, deceased, 
+    coronavirus, flu)
+glimpse(corona_kr)</code></pre>
+<pre><code>## Observations: 97
+## Variables: 6
+## $ date        &lt;chr&gt; &quot;2020-01-20&quot;, &quot;2020-01-21&quot;, &quot;2020-01-22&quot;, &quot;2020-01-23&quot;, &quot;…
+## $ test        &lt;int&gt; 1, 1, 4, 22, 27, 27, 51, 61, 116, 187, 246, 312, 371, 429…
+## $ confirmed   &lt;int&gt; 1, 1, 1, 1, 2, 2, 3, 4, 4, 4, 6, 11, 12, 15, 15, 16, 18, …
+## $ deceased    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ coronavirus &lt;dbl&gt; 20.69610, 35.33284, 29.74474, 100.00000, 86.11541, 62.848…
+## $ flu         &lt;dbl&gt; 0.70343, 0.59789, 0.56661, 0.55625, 0.40226, 0.39744, 0.4…</code></pre>
+<pre class="r"><code># filter()
+corona_kr &lt;- corona_kr %&gt;% filter(complete.cases(corona_kr))
+glimpse(corona_kr)</code></pre>
+<pre><code>## Observations: 52
+## Variables: 6
+## $ date        &lt;chr&gt; &quot;2020-01-20&quot;, &quot;2020-01-21&quot;, &quot;2020-01-22&quot;, &quot;2020-01-23&quot;, &quot;…
+## $ test        &lt;int&gt; 1, 1, 4, 22, 27, 27, 51, 61, 116, 187, 246, 312, 371, 429…
+## $ confirmed   &lt;int&gt; 1, 1, 1, 1, 2, 2, 3, 4, 4, 4, 6, 11, 12, 15, 15, 16, 18, …
+## $ deceased    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ coronavirus &lt;dbl&gt; 20.69610, 35.33284, 29.74474, 100.00000, 86.11541, 62.848…
+## $ flu         &lt;dbl&gt; 0.70343, 0.59789, 0.56661, 0.55625, 0.40226, 0.39744, 0.4…</code></pre>
+<pre class="r"><code># arrange()
+corona_kr &lt;- corona_kr %&gt;% arrange(desc(coronavirus))
+glimpse(corona_kr)</code></pre>
+<pre><code>## Observations: 52
+## Variables: 6
+## $ date        &lt;chr&gt; &quot;2020-01-23&quot;, &quot;2020-01-24&quot;, &quot;2020-02-22&quot;, &quot;2020-02-23&quot;, &quot;…
+## $ test        &lt;int&gt; 22, 27, 21586, 26179, 40304, 32756, 116, 16400, 53553, 66…
+## $ confirmed   &lt;int&gt; 1, 2, 433, 602, 977, 833, 4, 204, 1261, 1766, 2337, 2, 31…
+## $ deceased    &lt;int&gt; 0, 0, 2, 6, 12, 8, 0, 2, 12, 13, 13, 0, 17, 22, 1, 0, 0, …
+## $ coronavirus &lt;dbl&gt; 100.00000, 86.11541, 85.23907, 82.90014, 79.95441, 79.894…
+## $ flu         &lt;dbl&gt; 0.55625, 0.40226, 0.19472, 0.19326, 0.20181, 0.22708, 0.6…</code></pre>
+<pre class="r"><code>corona_kr &lt;- corona_kr %&gt;% arrange(date)
+
+# mutate()
+corona_kr &lt;- corona_kr %&gt;% separate(date, c(&quot;year&quot;, &quot;month&quot;, 
+    &quot;day&quot;))
+corona_kr &lt;- corona_kr %&gt;% mutate(`:=`(date_value, (20 + ((as.integer(month) - 
+    1) * 31) + as.integer(day))))
+corona_kr &lt;- corona_kr %&gt;% mutate(emergency_lvl = cut(date_value, 
+    breaks = c(39, 47, 73, 93), labels = c(&quot;Yellow&quot;, &quot;Orange&quot;, 
+        &quot;Red&quot;)))
+
+# group_by() and summarize()
+summary_corona &lt;- corona_kr %&gt;% group_by(emergency_lvl) %&gt;% summarize(sd = sd(coronavirus), 
+    mean = mean(coronavirus), median = median(coronavirus), max = max(coronavirus), 
+    min = min(coronavirus), quan = quantile(coronavirus, 0.85), 
+    var = var(coronavirus), n_dist = n_distinct(coronavirus), 
+    n(), cor_test = cor(coronavirus, test), cor_confirmed = cor(coronavirus, 
+        confirmed), cor_deceased = cor(coronavirus, deceased), 
+    mad = mad(coronavirus))
+view(summary_corona)
+
+summary_flu &lt;- corona_kr %&gt;% group_by(emergency_lvl) %&gt;% summarize(sd = sd(flu), 
+    mean = mean(flu), median = median(flu), max = max(flu), min = min(flu), 
+    quan = quantile(flu, 0.85), var = var(flu), n_dist = n_distinct(flu), 
+    n(), cor_test = cor(flu, test), cor_confirmed = cor(flu, 
+        confirmed), cor_deceased = cor(flu, deceased), mad = mad(flu))
+view(summary_flu)</code></pre>
+<p>I used the core dplyr functions select, filter, arrange, group_by, mutate, and summarize on “corona_kr” to generate summary statistics.</p>
+<p>I used select() to remove extraneous variables I would not be comparing, as to make the huge dataset less unweildy. This brought my number of total variables down to 6.</p>
+<p>I used filter() to remove rows with NA values that appeared because the timelines of the datasets were not completely matched up. For the purposes of this project, I planned to compare the values of COVID-19 case data in Korea and the percentage of corona related keywords in Naver searches over time. So, I chose to drop the dates in which there were NA values due to the unmatched timelines. This brought the number of observations down to 52.</p>
+<p>I used arrange() to arrange the data by descending coronavirus search proportions. But, because it made more sense to view data chronologically, I rearranged it so that I could see the data over time.</p>
+<p>I used mutate() to create a new variable indicating the level of emergency Korea announced at each day. This was done by looking up which days Korea announced increasing levels through the web. They had announced a “Yellow” level of emergency on January 3rd, an “Orange” level of emergency on January 28th, and a “Red” level of emergency on February 23rd. This was hard to mutate and took several steps because the date variable was not in a numeric form to allow for cutting. So, I separated the date, month, and year, and then created a defining “date_value” by adding up the day, 20,and 30 times the one minus the month. This means that for each date, there was a unique numeric value all in ascending order chronologically. Then, I was able to cut the values at the correct dates and label them as the appropriate levels of emergency. This creation of a new non numeric value</p>
+<p>I used group() and summarize() to compute 10 different summary statistics including sd, mean, med, max, min, quantile, var, n_distinct, cor (to test, confirmed, and deceased), median, and mad. I had 6 numeric variables and one non numeric variable, so I grouped all summary stats by the non numeric variable “emergency_lvl”. Then I chose to take the Naver searches and find summary stats on them as these were the “dependent variables”. I ran correlation stats against all three“independent variables” of people tested, confirmed, and deceased in respect to the coronavirus. I chose to do this because I thought it would show me an accurate picture of how the frequency of certain corona related Naver searches changed based on the level of emergency and realtime facts about the disease that was accessible to the public at that time.</p>
+<p>By doing all this, it was interesting to see that the frequency keyword “coronavirus” was high when it was first found in Korea, then interest seemed to wind down, but when severe (“Red”) state of emergency was announced interest and thus, keyword searches went back up. For the keyword “flu”, the proportional frequency of these Naver searches steadily decreased as time passed by. It was also facinating to see that “coronavirus” keyword searches were actually weakly negatively correlated to the amount of testing, confirmed, and deceased cases occured when in the “Red” emergency level. The data for coronavirus cases actually seemed to only have an impact nearer to when the first case of COVID-19 appeared in Korea.</p>
+</div>
+<div id="visualizing" class="section level2">
+<h2>Visualizing</h2>
+<pre class="r"><code>library(ggplot2)
+
+corona_kr %&gt;% select_if(is.numeric) %&gt;% cor %&gt;% as.data.frame %&gt;% 
+    rownames_to_column %&gt;% pivot_longer(-1) %&gt;% ggplot(aes(rowname, 
+    name, fill = value)) + geom_tile() + geom_text(aes(label = round(value, 
+    2))) + xlab(&quot;&quot;) + ylab(&quot;&quot;) + scale_fill_gradient2(low = &quot;red&quot;, 
+    high = &quot;blue&quot;) + ggtitle(&quot;Correlation Heatmap of Numeric Variables&quot;)</code></pre>
+<p><img src="../Project1_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>This is a correlation heatmap of my numeric variables. From this, we can see an strong correlations between all the variables of test, confirmed, deceased, and date_value. This is expected because the longer COVID-19 had been spreading in Korea, there was a response of more testing, and with more testing there was more confirmed cases, and also unfortunately more deaths. What is interesting is that the proportion of keyword “coronavirus” searches are actually weakly negatively correlated to the the progression of time and cases found in the country. This may indicate that perhaps there was a strong reaction to the introduction of COVID-19 to Korea, and interest since then has died down, or people had learned enough of what they wanted to know in the beginning weeks. In addition, the proportion of the keyword “flu” searches were more strongly negatively correlated to the progression of COVID-19 in Korea. This may indicate that as COVID-19 became more relevant, the flu became less of a concern to the general public in comparison.</p>
+<pre class="r"><code>ggplot(corona_kr, aes(coronavirus, flu)) + geom_point(aes(color = emergency_lvl)) + 
+    ggtitle(&quot;coronavirus vs flu Keyword Searches According to Emergency Level&quot;) + 
+    theme_minimal() + scale_color_brewer(palette = &quot;YlOrRd&quot;) + 
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + 
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 10))</code></pre>
+<p><img src="../Project1_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>This is a scatter plot of “coronavirus”&quot; vs “flu”&quot; Keyword Searches According to Emergency Level. From this graph we can see that for “Orange” and “Red” emergency levels, there are positive linear relationships between the two keyword searches. However, for the “Yellow” emergency level there is almost no linear relationship or correlation at all. It also shows that the more severe the virus’ spread in Korea became, the higher the correlation between coronavirus and flu became. However, I can also see that the more severe the emergency level, the lower the overall proportion of “flu” keyword searches there were. Also, interestingly, the keyword “coronavirus” had the lowest overal proportion of searches during the “Orange” emergency level.</p>
+<pre class="r"><code>ggplot(corona_kr, aes(x = date_value, y = confirmed)) + geom_point(aes(col = emergency_lvl, 
+    size = coronavirus)) + geom_smooth(method = &quot;loess&quot;, se = F) + 
+    xlim(c(39, 94)) + ylim(c(0, 7800)) + labs(subtitle = &quot;Taking into Consideration coronavirus Keyword Searches&quot;, 
+    y = &quot;Confirmed Cases&quot;, x = &quot;Date Value (dates in chronological order)&quot;, 
+    title = &quot;Scatterplot of Date Value v.s Confirmed Cases&quot;) + 
+    scale_color_brewer(palette = &quot;YlOrRd&quot;)</code></pre>
+<p><img src="../Project1_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>This is a scatterplot of Confirmed Cases over time where we are able to see the trendline of cases and also are able to consider the proportion of “coronavirus” keyword searches at those points as well. We are able to clearly see that the cases of coronaviruses were contained well into the “Orange” emergency level. However, the number of confirmed cases increased exponentially and Korea was soon announced to be in the “Red” emergency level. Also, we can see that interest in searching for “coronavirus” on naver increased in the “Yellow” emergency level, then decreased in the “Orange” emergency level, and then increased again as the population approached “Red” emergency level. At the end of the “Red” emergency level, interest died down again and also, the situation stabilized as the amount of confirmed cases began to slow down.</p>
+</div>
+<div id="dimensionality-reduction" class="section level2">
+<h2>Dimensionality Reduction</h2>
+<pre class="r"><code>pam2 &lt;- corona_kr %&gt;% select(-coronavirus, -flu) %&gt;% pam(2)
+
+sil_width &lt;- vector()
+for (i in 2:10) {
+    pam_fit &lt;- corona_kr %&gt;% select(-coronavirus, -flu) %&gt;% pam(i)
+    sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+
+pam_fit$silinfo$avg.width</code></pre>
+<pre><code>## [1] 0.6219349</code></pre>
+<pre class="r"><code>ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)</code></pre>
+<p><img src="../Project1_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pamfinish &lt;- corona_kr %&gt;% mutate(cluster = as.factor(pam2$clustering))
+
+confmat &lt;- pamfinish %&gt;% group_by(coronavirus, flu) %&gt;% count(cluster) %&gt;% 
+    arrange(desc(n)) %&gt;% pivot_wider(names_from = &quot;cluster&quot;, 
+    values_from = &quot;n&quot;, values_fill = list(n = 0))
+
+confmat</code></pre>
+<pre><code>## # A tibble: 52 x 4
+## # Groups:   coronavirus, flu [52]
+##    coronavirus    flu   `1`   `2`
+##          &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+##  1        9.80 0.0899     1     0
+##  2       10.3  0.100      1     0
+##  3       11.0  0.120      1     0
+##  4       15.0  0.120      1     0
+##  5       15.1  0.140      1     0
+##  6       15.9  0.153      1     0
+##  7       16.9  0.118      1     0
+##  8       18.1  0.171      1     0
+##  9       20.7  0.703      1     0
+## 10       24.0  0.0894     0     1
+## # … with 42 more rows</code></pre>
+<pre class="r"><code>ggplot(pamfinish, aes(x = coronavirus, y = flu, color = cluster)) + 
+    ggtitle(&quot;coronavirus vs. flu&quot;) + geom_point()</code></pre>
+<p><img src="../Project1_files/figure-html/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(pam2, which = 2)</code></pre>
+<p><img src="../Project1_files/figure-html/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(GGally)
+ggpairs(pamfinish, columns = 5:11, aes(color = cluster))</code></pre>
+<p><img src="../Project1_files/figure-html/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /> Because the highest value on my sil_width graph was 2, I chose to use 2 clusters. My average silhouette width was found to be .62 according to the silhouette plot. Using ggpairs() I was able to visualize all pariwise combinations of the 7 numeric values. Correlation between the deceased and confirmed was strongest with a nearly linear correlation. This made sense because the more cases we have, the more deaths we would have according to the fatality rate of COVID-19 in Korea. From this data it seems that the keywords “coronavirus” was searched with not much correlation to the number of cases, deaths, and heightening emergency level. Instead, It correlated more so with keyword searches of “flu” in general. Due to this, believe that the proportion of keyword searches pertaining to COVID-19 on Naver was probably more related to key events, articles, and news reports made by the Korean government and media over this time period.</p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../js/docs.min.js"></script>
+<script src="../js/main.js"></script>
+
+<script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

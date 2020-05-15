@@ -1,0 +1,40 @@
+---
+title: Fancy Initials
+author: Elizabeth Oh
+date: '2020-05-15'
+slug: fancy-initials
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<p>Here are some fancy initials</p>
+<pre class="python"><code>    
+print(&quot;   EEEEEEEEEEEE        HH        HH        OOOOOOOOOOOO        \n   EEEEEEEEEEEE        HH        HH        OOOOOOOOOOOO        \n   EE                  HH        HH        OO        OO        \n   EE                  HH        HH        OO        OO        \n   EEEEEEEEEEEE        HHHHHHHHHHHH        OO        OO        \n   EEEEEEEEEEEE        HHHHHHHHHHHH        OO        OO        \n   EE                  HH        HH        OO        OO        \n   EE                  HH        HH        OO        OO        \n   EEEEEEEEEEEE   ..   HH        HH   ..   OOOOOOOOOOOO   ..   \n   EEEEEEEEEEEE   ..   HH        HH   ..   OOOOOOOOOOOO   ..   \n&quot;)</code></pre>
+<pre><code>##    EEEEEEEEEEEE        HH        HH        OOOOOOOOOOOO        
+##    EEEEEEEEEEEE        HH        HH        OOOOOOOOOOOO        
+##    EE                  HH        HH        OO        OO        
+##    EE                  HH        HH        OO        OO        
+##    EEEEEEEEEEEE        HHHHHHHHHHHH        OO        OO        
+##    EEEEEEEEEEEE        HHHHHHHHHHHH        OO        OO        
+##    EE                  HH        HH        OO        OO        
+##    EE                  HH        HH        OO        OO        
+##    EEEEEEEEEEEE   ..   HH        HH   ..   OOOOOOOOOOOO   ..   
+##    EEEEEEEEEEEE   ..   HH        HH   ..   OOOOOOOOOOOO   ..</code></pre>
+<pre class="python"><code>reaction = &quot;very cool&quot;</code></pre>
+<p>variables translated to r</p>
+<pre class="r"><code>#this is an r code chunk
+library(reticulate)
+number = 10
+print(py$reaction)</code></pre>
+<pre><code>## [1] &quot;very cool&quot;</code></pre>
+<p>variables translated back to python</p>
+<pre class="python"><code>    
+print(&quot;I give this display a &quot; + str(int(r.number)) + &quot; out of 10&quot;)</code></pre>
+<pre><code>## I give this display a 10 out of 10</code></pre>
+<div class="figure">
+<img src="/img/bongo.png" />
+
+</div>

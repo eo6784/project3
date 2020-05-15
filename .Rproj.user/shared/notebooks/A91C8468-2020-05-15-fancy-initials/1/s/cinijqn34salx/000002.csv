@@ -1,0 +1,6 @@
+"0","#this is an r code chunk"
+"0","library(reticulate)"
+"0","x = 10"
+"0","print(py$reaction)"
+"1","NULL
+"

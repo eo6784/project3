@@ -1,0 +1,261 @@
+---
+title: I love Python
+author: Elizabeth Oh
+date: '2020-05-15'
+slug: i-love-python
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<p>I started off learning Java in high school. Though I loved coding and I found that much of it made sense, I hated how tedious it was. The number of times I got errors for a missing a curly bracket still really makes me frustrated. Python is a lot simpler and gets rid of all those errors. Also, with the right program for coding it will even make your job easier by giving suggestions for variable and class names you have already defined (much like R).</p>
+<p>Some projects I’ve worked in using python are developing an analog version of the game Adventure from Atari and changing it to letting someone wander around my home. Here is the code and an example of the game playing!</p>
+<pre class="python"><code>class Room():
+    def __init__(self,name,north,east,south,west,up,down,contents):
+        self.name = name
+        self.north = north
+        self.east = east
+        self.south = south
+        self.west = west
+        self.up = up
+        self.down = down
+        self.contents = contents
+
+    def displayRoom(self):
+        print(&quot;Room name:   &quot; + self.name)
+        if(self.north != None):
+            print(&quot;   Room to the north:  &quot; + self.north)
+        if(self.east != None):
+            print(&quot;   Room to the east:   &quot; + self.east)
+        if(self.south != None):
+            print(&quot;   Room to the south:  &quot; + self.south)
+        if(self.west != None):
+            print(&quot;   Room to the west:   &quot; + self.west)
+        if(self.up != None):
+            print(&quot;   Room above:         &quot; + self.up)
+        if(self.down != None):
+            print(&quot;   Room below:         &quot; + self.down)
+        print(&quot;   Room contents:      &quot; , self.contents)
+
+        print()
+
+def createRoom(roomData):
+    return Room(roomData[0],roomData[1],roomData[2],roomData[3],roomData[4],roomData[5],roomData[6],roomData[7])
+
+def look():
+    print(&quot;You are currently in the &quot; + current.name)
+    print(&quot;Contents of the room:&quot;)
+    if len(current.contents) &lt; 1:
+        print(   &quot;None&quot;)
+    else:
+        i = 0
+        while i &lt; len(current.contents):
+            print(&quot;   &quot; + current.contents[i])
+            i = i + 1
+
+def getRoom(name):
+    if(name == &quot;Living Room&quot;):
+        return floorPlan[0]
+    if(name == &quot;Dining Room&quot;):
+        return floorPlan[1]
+    if(name == &quot;Kitchen&quot;):
+        return floorPlan[2]
+    if(name == &quot;Upper Hall&quot;):
+        return floorPlan[3]
+    if(name == &quot;Bathroom&quot;):
+        return floorPlan[4]
+    if(name == &quot;Small Bedroom&quot;):
+        return floorPlan[5]
+    if(name == &quot;Master Bedroom&quot;):
+        return floorPlan[6]
+
+        
+def move(direction):
+    if(direction == &quot;north&quot;):
+        temp = current.north
+    elif(direction == &quot;east&quot;):
+        temp = current.east
+    elif(direction == &quot;south&quot;):
+        temp = current.south
+    elif(direction == &quot;west&quot;):
+        temp = current.west
+    elif(direction == &quot;up&quot;):
+        temp = current.up
+    elif(direction == &quot;down&quot;):
+        temp = current.down
+    else:
+        temp = &quot;None&quot;
+    
+
+    if (temp == &quot;None&quot;):
+       print(&quot;You can&#39;t move in that direction&quot;)
+       return(current)
+    else:
+        print(&quot;You are now in &quot; + temp)
+        return(getRoom(temp))
+
+def displayAllRooms():
+    floorPlan[0].displayRoom()
+    floorPlan[1].displayRoom()
+    floorPlan[2].displayRoom()
+    floorPlan[3].displayRoom()
+    floorPlan[4].displayRoom()
+    floorPlan[5].displayRoom()
+    floorPlan[6].displayRoom()
+        
+def loadMap():
+
+    global floorPlan    # make the variable &quot;floorPlan&quot; a global variable
+
+    inputfile = open(&quot;ProjectData.txt&quot;,&quot;r&quot;)
+
+    
+    room = 1
+    while room  &lt; 8:
+        data = inputfile.readline()
+        temproom = []
+        line = data[0:data.find(&quot;\n&quot;)]
+        i = 1
+        while i &lt;7:
+            comma = line.find(&quot;,&quot;)
+            info = line[0:comma]
+            if(not info[0].isalpha()):
+                info = info[1:len(info)-1]
+            line = line[comma+1:len(line)]
+            temproom.append(info)
+            i = i + 1
+        if line.find(&quot;,&quot;)&lt;0:
+            if(not line[0].isalpha()):
+                line = line[1:len(line)-1]
+            temproom.append(line)
+            line = &quot;&quot;
+        else:
+            comma = line.find(&quot;,&quot;)
+            info = line[0:comma]
+            if(not info[0].isalpha()):
+                info = info[1:len(info)-1]
+            line = line[comma+1:len(line)]
+            temproom.append(info)
+        items = []
+        while line != &quot;&quot;:
+            if line.find(&quot;,&quot;)&lt;0:
+                items.append(line[1:len(line)-1])
+                line = &quot;&quot;
+            else:
+                comma = line.find(&quot;,&quot;)
+                info = line[1:comma-1]
+                line = line[comma+1:len(line)]
+                items.append(info)
+        temproom.append(items)
+
+        if room == 1:
+            room1 = temproom
+        if room == 2:
+            room2 = temproom
+        if room == 3:
+            room3 = temproom
+        if room == 4:
+            room4 = temproom
+        if room == 5:
+            room5 = temproom
+        if room == 6:
+            room6 = temproom
+        if room == 7:
+            room7 = temproom
+
+        room = room + 1
+
+    floorPlan = [createRoom(room1),createRoom(room2),createRoom(room3),createRoom(room4),createRoom(room5),createRoom(room6),createRoom(room7)]
+
+def pickup(item):
+    
+    if item in current.contents:
+        current.contents.remove(item)
+        inventory.append(item)
+        print(&quot;You now have the &quot; + item + &quot;.&quot;)
+    else:
+        print(&quot;That item is not in this room.&quot;)
+
+def drop(item):
+    
+    if item in inventory:
+        inventory.remove(item)
+        current.contents.append(item)
+        print(&quot;You have dropped the &quot; + item + &quot;.&quot;)
+    else:
+        print(&quot;You dont have that item.&quot;)
+
+def listInventory():
+    print(&quot;You are currently carrying:&quot;)
+    if len(inventory) &lt; 1:
+        print(   &quot;nothing.&quot;)
+    else:
+        i = 0
+        while i &lt; len(inventory):
+            print(&quot;   &quot; + inventory[i])
+            i = i + 1
+          
+
+
+def main():
+
+    global current      # make the variable &quot;current&quot; a global variable
+    global inventory
+    inventory = []
+    
+    loadMap()
+    
+    displayAllRooms()
+
+    # TEST CODE:  walk around the house
+    
+    current = floorPlan[0]      # start in the living room
+    look()                      # Living Room
+    print()
+
+    p = 0
+    while p&lt;1:
+        command = str(input( &quot;Enter a command: &quot; ))
+
+        if command == &quot;exit&quot;:
+            break
+        elif command == &quot;inventory&quot;:
+            listInventory()
+        elif command == &quot;look&quot;:
+            look()
+        elif command == &quot;help&quot;:
+            print()
+            print(&quot;look:        display the name of the current room and its contents&quot;)
+            print(&quot;north:       move north&quot;)
+            print(&quot;east:        move east&quot;)
+            print(&quot;south:       move south&quot;)
+            print(&quot;west:        move west&quot;)
+            print(&quot;up:          move up&quot;)
+            print(&quot;down:        move down&quot;)
+            print(&quot;inventory:   list what items you&#39;re currently carrying&quot;)
+            print(&quot;get &lt;item&gt;:  pick up an item currently in the room&quot;)
+            print(&quot;drop &lt;item&gt;: drop an item you&#39;re currently carrying&quot;)
+            print(&quot;help:        print this list&quot;)
+            print(&quot;exit:        quit the game&quot;)
+        elif command.startswith(&quot;get&quot;):
+            pickup(command[4:len(command)])
+        elif command.startswith(&quot;drop&quot;):
+            drop(command[4:len(command)])
+        elif command == &quot;north&quot; or &quot;south&quot; or &quot;east&quot; or &quot;west&quot; or &quot;up&quot; or &quot;down&quot;:
+            current = move(command)
+        else:
+            print(&quot;Invalid command. Please use valid command.&quot;)
+            
+        print()
+
+    print(&quot;Quitting game.&quot;)
+    
+    main()
+</code></pre>
+<div class="figure">
+<img src="/img/adventure.JPG" />
+
+</div>
+<p>It is really cool! I hope one day I can learn to design more graphically pleasing game using python or R!</p>

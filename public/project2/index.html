@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Elizabeth Oh" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="../img/favicon.ico">
+    <title>Project 2: Modeling, Testing, and Predicting</title>
+    <meta name="generator" content="Hugo 0.70.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../blog/">BLOG</a></li>
+        
+        <li><a href="../projects/">PROJECTS</a></li>
+        
+        <li><a href="../resume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../project2/">Project 2: Modeling, Testing, and Predicting</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="modeling" class="section level1">
+<h1>Modeling</h1>
+<div id="introduction" class="section level2">
+<h2>0. Introduction</h2>
+<pre class="r"><code>install.packages(&quot;fivethirtyeight&quot;)
+library(fivethirtyeight)
+data()
+
+`?`(fivethirtyeight::infert)</code></pre>
+<pre><code>## No documentation for &#39;infert&#39; in specified packages and libraries:
+## you could try &#39;??infert&#39;</code></pre>
+<pre class="r"><code>head(infert)</code></pre>
+<pre><code>##   education age parity induced case spontaneous stratum pooled.stratum
+## 1    0-5yrs  26      6       1    1           2       1              3
+## 2    0-5yrs  42      1       1    1           0       2              1
+## 3    0-5yrs  39      6       2    1           0       3              4
+## 4    0-5yrs  34      4       2    1           0       4              2
+## 5   6-11yrs  35      3       1    1           1       5             32
+## 6   6-11yrs  36      4       2    1           1       6             36</code></pre>
+<pre class="r"><code>abortData &lt;- select(infert, -pooled.stratum, -stratum)
+abortData$tfinduced &lt;- abortData$induced &lt; 1
+abortData$tfspontaneous &lt;- abortData$spontaneous &lt; 1
+head(abortData)</code></pre>
+<pre><code>##   education age parity induced case spontaneous tfinduced tfspontaneous
+## 1    0-5yrs  26      6       1    1           2     FALSE         FALSE
+## 2    0-5yrs  42      1       1    1           0     FALSE          TRUE
+## 3    0-5yrs  39      6       2    1           0     FALSE          TRUE
+## 4    0-5yrs  34      4       2    1           0     FALSE          TRUE
+## 5   6-11yrs  35      3       1    1           1     FALSE         FALSE
+## 6   6-11yrs  36      4       2    1           1     FALSE         FALSE</code></pre>
+<p>The dataset I will be using is from ‘infert’ from package ‘fivethirtyeight’. This data contains information about infertility after spontaneous and indiced abortions. As a woman I think it is important to know what effects the decisions I make and the options that are availble will have on my body in the long run.</p>
+<p>I have removed some variables I wasn’t interested in and saved the data in ‘abortData’. ‘abortData’ includes the variables ‘education’, ‘age’, ‘parity’, ‘induced’, and ‘spontaneous’. ‘education’ is the categorical level of education each subject recieved. ‘age’ is the age of the female the data was collected from at the time of collection. ‘parity’ is the number of successful births that woman has had. ‘induced’ indicates how many induced abortions the subject has undergone. ‘spontaneous’ holds the number of spontaneous abortions that occured for that subject. Finally, ‘tfinduced’ and ‘tfspontaneous’ are manipulated binary response data that indicates whether the subject has undergone an induced abortion before or spontaneous abortions before respectively.</p>
+<p>There are 248 observations or subjects.</p>
+</div>
+<div id="manovaanova" class="section level2">
+<h2>1. MANOVA/ANOVA</h2>
+<pre class="r"><code>ggplot(abortData, aes(x = parity, y = spontaneous)) + geom_point(alpha = 0.5) + 
+    geom_density_2d(h = 2) + coord_fixed() + facet_wrap(~education)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>man1 &lt;- manova(cbind(parity, spontaneous) ~ education, data = abortData)
+summary(man1)</code></pre>
+<pre><code>##            Df  Pillai approx F num Df den Df   Pr(&gt;F)    
+## education   2 0.20121   13.703      4    490 1.34e-10 ***
+## Residuals 245                                            
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(man1)</code></pre>
+<pre><code>##  Response parity :
+##              Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## education     2  62.02 31.0119   23.39 5.055e-10 ***
+## Residuals   245 324.84  1.3259                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response spontaneous :
+##              Df  Sum Sq Mean Sq F value Pr(&gt;F)
+## education     2   0.776 0.38784  0.7211 0.4872
+## Residuals   245 131.769 0.53783</code></pre>
+<pre class="r"><code>abortData %&gt;% group_by(education) %&gt;% summarize(mean(parity), 
+    mean(spontaneous))</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   education `mean(parity)` `mean(spontaneous)`
+##   &lt;fct&gt;              &lt;dbl&gt;               &lt;dbl&gt;
+## 1 0-5yrs              4.25               0.417
+## 2 6-11yrs             2.1                0.542
+## 3 12+ yrs             1.86               0.629</code></pre>
+<pre class="r"><code>pairwise.t.test(abortData$parity, abortData$education, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  abortData$parity and abortData$education 
+## 
+##         0-5yrs  6-11yrs
+## 6-11yrs 2.9e-09 -      
+## 12+ yrs 6.3e-11 0.11   
+## 
+## P value adjustment method: none</code></pre>
+<p>A one-way MANOVA was conducted to determine the effect of education level (0-5yrs, 6-11yrs, 12+ yrs) on two dependent variables (parity, spontaneous). Examination of bivariate density plots for each group revealed that this was not multivariate normality. It is likely that the assumptions of multivariate normality has not been met.</p>
+<p>Significant differences were found among the three education levels for at least one of the dependent variables, Pillali trace = 0.20121, pseudo F(4,490)=13.703, p&lt;0.0001.</p>
+<p>Univariate ANOVAs for each dependent variable were conducted as follow-up tests to the MANOVA, using the Bonferroni method for controlling Type I error rates for multiple comparisons. The univariate ANOVA for parity was also significant, F(2,245),p&lt;0.0001. The univariate ANOVA for spontaneous abortions was not significant, F(2,245) , p=0.4872.</p>
+<p>Post hoc analysis was performed conducting pairwise comparisons to determine which education level differed in parity and spontaneous abortions. All three education levels were found not to differ significantly from each other in terms of parity and induced abortions after adjusting for multiple comparisons (bonferroni α = 0.5/6 = 0.083). Only 0-5yrs and 6-11yrs appeared to differ significantly.</p>
+</div>
+<div id="randomization-test" class="section level2">
+<h2>2. Randomization test</h2>
+<pre class="r"><code>ggplot(abortData, aes(spontaneous, fill = tfinduced)) + geom_histogram(bins = 6.5) + 
+    facet_wrap(~tfinduced, ncol = 2) + theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean(abortData[abortData$tfinduced == FALSE, ]$spontaneous) - 
+    mean(abortData[abortData$tfinduced == TRUE, ]$spontaneous)</code></pre>
+<pre><code>## [1] -0.372361</code></pre>
+<pre class="r"><code>rand_dist &lt;- vector()
+for (i in 1:5000) {
+    new &lt;- data.frame(spontaneous = sample(abortData$spontaneous), 
+        induced = abortData$tfinduced)
+    rand_dist[i] &lt;- mean(new[new$induced == FALSE, ]$spontaneous) - 
+        mean(new[new$induced == TRUE, ]$spontaneous)
+}
+hist(rand_dist, main = &quot;&quot;, ylab = &quot;&quot;)
+abline(v = -0.372361, col = &quot;red&quot;)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean(rand_dist &gt; 0.372361 | rand_dist &lt; -0.372361)</code></pre>
+<pre><code>## [1] 2e-04</code></pre>
+<p>H0: The mean of spontaneous abortions is the same for women who have undergone induced abortions and those who have not. HA: The mean of spontaneous abortions is not the same for women who have undergone induced abortions and those who have not.</p>
+<p>According to this randomization test, we reject the null hypotyesis as p &lt; 0.05, meaning that the mean of spontaneous abortions is not the same for women who have undergone induced abortions and those who have not.</p>
+</div>
+<div id="linear-regression-model" class="section level2">
+<h2>3. Linear Regression Model</h2>
+<pre class="r"><code>fit &lt;- lm(spontaneous ~ age + induced, data = abortData)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = spontaneous ~ age + induced, data = abortData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.9004 -0.5866 -0.2353  0.3624  1.6126 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.22991    0.27930   4.404 1.59e-05 ***
+## age         -0.01569    0.00857  -1.831   0.0683 .  
+## induced     -0.27763    0.06094  -4.555 8.25e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.7037 on 245 degrees of freedom
+## Multiple R-squared:  0.08463,    Adjusted R-squared:  0.07716 
+## F-statistic: 11.33 on 2 and 245 DF,  p-value: 1.975e-05</code></pre>
+<pre class="r"><code>resids &lt;- lm(spontaneous ~ age + induced, data = abortData)$residuals
+ggplot() + geom_histogram(aes(resids), bins = 10)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fitted &lt;- lm(spontaneous ~ age + induced, data = abortData)$fitted.values
+ggplot() + geom_point(aes(resids, fitted))</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot() + geom_qq(aes(sample = resids)) + geom_qq_line(aes(sample = resids), 
+    color = &quot;red&quot;)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>resids &lt;- fit$residuals
+fitvals &lt;- fit$fitted.values
+ggplot() + geom_point(aes(fitvals, resids)) + geom_hline(yintercept = 0, 
+    color = &quot;red&quot;)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot() + geom_histogram(aes(resids), bins = 20)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-4-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(sandwich)
+library(lmtest)
+bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 15.341, df = 2, p-value = 0.0004664</code></pre>
+<pre class="r"><code>summary(fit)$coef[, 1:2]</code></pre>
+<pre><code>##                Estimate  Std. Error
+## (Intercept)  1.22990839 0.279297927
+## age         -0.01569109 0.008569922
+## induced     -0.27762548 0.060945362</code></pre>
+<pre class="r"><code>coeftest(fit, vcov = vcovHC(fit))[, 1:2]</code></pre>
+<pre><code>##                Estimate  Std. Error
+## (Intercept)  1.22990839 0.260095973
+## age         -0.01569109 0.008104023
+## induced     -0.27762548 0.050679521</code></pre>
+<pre class="r"><code>(sum((abortData$spontaneous - mean(abortData$spontaneous))^2) - 
+    sum(fit$residuals^2))/sum((abortData$spontaneous - mean(abortData$spontaneous))^2)</code></pre>
+<pre><code>## [1] 0.08463146</code></pre>
+<p>Controlling for induced abortions, there is not a significant effect of age on spontaneous abortions, t=-1.843, df = 245, p = 0.06655. However, controlling for age, there is a significant effect of induced abortions on spontaneous abortions. For every one unit increase of induced abortions, spontaneous abortions increases 0.39123 abortions on average, t=4.279, df = 245, p &lt;0.001.</p>
+<p>The assumptions of linearity, normality, and homoskedasticity are all not applicable according to the graphs.</p>
+<p>All the standard errors decreased when recomputed with corrected SEs. It is significant because this data presents a violation of homoskedasticity.</p>
+<p>The proportion of the variation in spontaneous abortions that can be explained by the overall model with all predicters at once is 0.0761.</p>
+</div>
+<div id="bootstrapped-standard-errors" class="section level2">
+<h2>4. Bootstrapped Standard Errors</h2>
+<pre class="r"><code>samp_distn &lt;- replicate(5000, {
+    boot_dat &lt;- sample_frac(abortData, replace = T)
+    fit &lt;- lm(spontaneous ~ age + induced, data = boot_dat)
+    coef(fit)
+})
+
+samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept)         age    induced
+## 1   0.2563475 0.007976259 0.05025469</code></pre>
+<p>The bootstrapped SEs are less than the original SEs but greater than the corrected robust SEs.</p>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>5. Logistic Regression</h2>
+<pre class="r"><code>fit &lt;- glm(tfspontaneous ~ parity + induced, data = abortData, 
+    family = binomial(link = &quot;logit&quot;))
+coeftest(fit)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##             Estimate Std. Error z value  Pr(&gt;|z|)    
+## (Intercept)  1.30752    0.29435  4.4421 8.910e-06 ***
+## parity      -0.89937    0.16000 -5.6209 1.900e-08 ***
+## induced      1.58667    0.27680  5.7322 9.914e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(coef(fit))</code></pre>
+<pre><code>## (Intercept)      parity     induced 
+##   3.6969766   0.4068277   4.8874659</code></pre>
+<pre class="r"><code>prob &lt;- predict(fit, type = &quot;response&quot;)
+pred &lt;- ifelse(prob &gt; 0.5, 1, 0)
+table(prediction = pred, truth = abortData$tfspontaneous) %&gt;% 
+    addmargins</code></pre>
+<pre><code>##           truth
+## prediction FALSE TRUE Sum
+##        0      54   29  83
+##        1      53  112 165
+##        Sum   107  141 248</code></pre>
+<pre class="r"><code>(54 + 112)/248  #accuracy</code></pre>
+<pre><code>## [1] 0.6693548</code></pre>
+<pre class="r"><code>112/141  #tpr</code></pre>
+<pre><code>## [1] 0.7943262</code></pre>
+<pre class="r"><code>54/107  #tnr</code></pre>
+<pre><code>## [1] 0.5046729</code></pre>
+<pre class="r"><code>54/83  #ppv</code></pre>
+<pre><code>## [1] 0.6506024</code></pre>
+<pre class="r"><code>abortData$logit &lt;- predict(fit, type = &quot;link&quot;)
+abortData %&gt;% ggplot() + geom_density(aes(logit, color = tfspontaneous, 
+    fill = tfspontaneous), alpha = 0.4) + theme(legend.position = c(0.85, 
+    0.85)) + geom_vline(xintercept = 0) + xlab(&quot;logit (log-odds)&quot;) + 
+    geom_rug(aes(logit, color = tfspontaneous)) + geom_text(x = -2, 
+    y = 0.07, label = &quot;TN = 29&quot;) + geom_text(x = -1.75, y = 0.008, 
+    label = &quot;FN = 54&quot;) + geom_text(x = 1, y = 0.006, label = &quot;FP = 53&quot;) + 
+    geom_text(x = 2, y = 0.07, label = &quot;TP = 112&quot;)</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(plotROC)
+
+
+ROCplot &lt;- ggplot(abortData) + geom_roc(aes(d = tfspontaneous, 
+    m = prob), n.cuts = 0)
+
+ROCplot</code></pre>
+<p><img src="../Project2_files/figure-html/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.7565454</code></pre>
+<pre class="r"><code>library(pROC)
+
+class_diag &lt;- function(probs, truth) {
+    # CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV
+    tab &lt;- table(factor(probs &gt; 0.5, levels = c(&quot;FALSE&quot;, &quot;TRUE&quot;)), 
+        truth)
+    acc = sum(diag(tab))/sum(tab)
+    sens = tab[2, 2]/colSums(tab)[2]
+    spec = tab[1, 1]/colSums(tab)[1]
+    ppv = tab[2, 2]/rowSums(tab)[2]
+    if (is.numeric(truth) == FALSE &amp; is.logical(truth) == FALSE) 
+        truth &lt;- as.numeric(truth) - 1
+    # CALCULATE EXACT AUC
+    ord &lt;- order(probs, decreasing = TRUE)
+    probs &lt;- probs[ord]
+    truth &lt;- truth[ord]
+    TPR = cumsum(truth)/max(1, sum(truth))
+    FPR = cumsum(!truth)/max(1, sum(!truth))
+    dup &lt;- c(probs[-1] &gt;= probs[-length(probs)], FALSE)
+    TPR &lt;- c(0, TPR[!dup], 1)
+    FPR &lt;- c(0, FPR[!dup], 1)
+    n &lt;- length(TPR)
+    auc &lt;- sum(((TPR[-1] + TPR[-n])/2) * (FPR[-1] - FPR[-n]))
+    data.frame(acc, sens, spec, ppv, auc)
+}
+
+probs &lt;- predict(fit, type = &quot;response&quot;)
+class_diag(probs, abortData$tfspontaneous)</code></pre>
+<pre><code>##            acc      sens      spec       ppv       auc
+## TRUE 0.6693548 0.7943262 0.5046729 0.6787879 0.7565454</code></pre>
+<pre class="r"><code>set.seed(1234)
+k = 10
+data &lt;- abortData[sample(nrow(abortData)), ]
+folds &lt;- cut(seq(1:nrow(abortData)), breaks = k, labels = F)
+diags &lt;- NULL
+for (i in 1:k) {
+    train &lt;- data[folds != i, ]
+    test &lt;- data[folds == i, ]
+    truth &lt;- test$tfspontaneous
+    fit &lt;- glm(tfspontaneous ~ (.)^2, data = abortData, family = &quot;binomial&quot;)
+    probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+    diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+summarize_all(diags, mean)</code></pre>
+<pre><code>##   acc sens spec ppv auc
+## 1   1    1    1   1   1</code></pre>
+<p>Controlling for induced abortions, parity has a significant negative impact on if spontaneous abortions has occured. Controlling for parity, induced abortions has a significant positive impact on if spontaneous abortions has occured.</p>
+<p>Interpretation of the coefficients are that the intercept shows the odds for spontaneous abortion when parity = 0 and induced abortion = 0 is 3.6969766. Controlling for induced abortions, for each additional successful birth (parity), the odds of an spontaneous abortion increase by a factor of 0.4068277 (significant). Controlling for parity, for each additional induced abortion, the odds of a spontaneous abortion increase by a factor of 4.8874659.</p>
+<p>According to the confusion matrix, the overall accuracy (the proportion of correctly predicted cases) is 0.6693548, the sensitivity(the proportion of the occurance of spontaneous abortions correctly predicted) is 0.7943262, the specificity (the proportion of the spontaneous abortions not occuring correctly predicted) is 0.5046729, and precision (the proportion of predictions for spontaneous abortions occuring and actually having occured) is 0.6506024.</p>
+<p>According to the ROC curve and the AUC calcualtion, on average, 75.65% of the time a subject with a higher predicted probability for spontaneous abortions will have spontaneous abortions.</p>
+<p>Though it is a little odd, I got 1 for average out of sample Accuracy, Sensitivity, and Recall. This means both insample and out of sample performance is amazing and we are not overfitting.</p>
+</div>
+<div id="prediction-and-lasso" class="section level2">
+<h2>6. Prediction and LASSO</h2>
+<pre class="r"><code>library(glmnet)
+y &lt;- as.matrix(abortData$tfspontaneous)
+x &lt;- model.matrix(tfspontaneous ~ ., data = select(abortData, 
+    -tfinduced, -spontaneous, -logit))[, -1]
+x &lt;- scale(x)
+head(x)</code></pre>
+<pre><code>##   education6-11yrs education12+ yrs        age     parity  induced     case
+## 1       -0.9662918        -0.935545 -1.0480747  3.1220494 0.578801 1.407102
+## 2       -0.9662918        -0.935545  1.9986363 -0.8731428 0.578801 1.407102
+## 3       -0.9662918        -0.935545  1.4273780  3.1220494 1.932977 1.407102
+## 4       -0.9662918        -0.935545  0.4752808  1.5239725 1.932977 1.407102
+## 5        1.0307112        -0.935545  0.6657002  0.7249341 0.578801 1.407102
+## 6        1.0307112        -0.935545  0.8561197  1.5239725 1.932977 1.407102</code></pre>
+<pre class="r"><code>cv &lt;- cv.glmnet(x, y, family = &quot;binomial&quot;)
+lasso &lt;- glmnet(x, y, family = &quot;binomial&quot;, lambda = cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 7 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                          s0
+## (Intercept)       0.3447217
+## education6-11yrs  .        
+## education12+ yrs -0.2297885
+## age               0.3655342
+## parity           -1.0463871
+## induced           1.0778952
+## case             -0.7257567</code></pre>
+<pre class="r"><code>set.seed(1234)
+k = 10
+data &lt;- abortData %&gt;% sample_frac
+folds &lt;- ntile(1:nrow(data), n = 10)
+diags &lt;- NULL
+for (i in 1:k) {
+    train &lt;- data[folds != i, ]
+    test &lt;- data[folds == i, ]
+    truth &lt;- test$tfspontaneous
+    fit &lt;- glm(tfspontaneous ~ ., data = train, family = &quot;binomial&quot;)
+    probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+    diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+diags %&gt;% summarize_all(mean)</code></pre>
+<pre><code>##   acc sens spec ppv auc
+## 1   1    1    1   1   1</code></pre>
+<p>First, I removed variables that were redundant (generated only to fulfill binary type data for previous section) and extraneous data(logit).</p>
+<p>Interestingly, all variables except ‘education 6-11yrs’ was retained. This means that ‘education12+yrs’, ‘age’, ‘parity’, ‘induced’, and ‘case’.</p>
+<p>Again the accuracy was 1 meaning it also is a very good fit. I am unsure which is considered better or if this is an error/bad data for Lasso and Logistic Regression.</p>
+</div>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../js/docs.min.js"></script>
+<script src="../js/main.js"></script>
+
+<script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

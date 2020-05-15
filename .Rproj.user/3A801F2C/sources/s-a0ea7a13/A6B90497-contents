@@ -1,0 +1,846 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Project 1: Exploratory Data Analysis},
+            pdfauthor={Elizabeth Oh (eo6784)},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Project 1: Exploratory Data Analysis}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Elizabeth Oh (eo6784)}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{3/15/2020}
+
+
+\begin{document}
+\maketitle
+
+\section{Modeling}\label{modeling}
+
+\subsection{0. Introduction}\label{introduction}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"fivethirtyeight"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(fivethirtyeight)}
+\KeywordTok{data}\NormalTok{()}
+
+\StringTok{`}\DataTypeTok{?}\StringTok{`}\NormalTok{(fivethirtyeight}\OperatorTok{::}\NormalTok{infert)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## No documentation for 'infert' in specified packages and libraries:
+## you could try '??infert'
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(infert)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   education age parity induced case spontaneous stratum pooled.stratum
+## 1    0-5yrs  26      6       1    1           2       1              3
+## 2    0-5yrs  42      1       1    1           0       2              1
+## 3    0-5yrs  39      6       2    1           0       3              4
+## 4    0-5yrs  34      4       2    1           0       4              2
+## 5   6-11yrs  35      3       1    1           1       5             32
+## 6   6-11yrs  36      4       2    1           1       6             36
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{abortData <-}\StringTok{ }\KeywordTok{select}\NormalTok{(infert, }\OperatorTok{-}\NormalTok{pooled.stratum, }\OperatorTok{-}\NormalTok{stratum)}
+\NormalTok{abortData}\OperatorTok{$}\NormalTok{tfinduced <-}\StringTok{ }\NormalTok{abortData}\OperatorTok{$}\NormalTok{induced }\OperatorTok{<}\StringTok{ }\DecValTok{1}
+\NormalTok{abortData}\OperatorTok{$}\NormalTok{tfspontaneous <-}\StringTok{ }\NormalTok{abortData}\OperatorTok{$}\NormalTok{spontaneous }\OperatorTok{<}\StringTok{ }\DecValTok{1}
+\KeywordTok{head}\NormalTok{(abortData)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   education age parity induced case spontaneous tfinduced tfspontaneous
+## 1    0-5yrs  26      6       1    1           2     FALSE         FALSE
+## 2    0-5yrs  42      1       1    1           0     FALSE          TRUE
+## 3    0-5yrs  39      6       2    1           0     FALSE          TRUE
+## 4    0-5yrs  34      4       2    1           0     FALSE          TRUE
+## 5   6-11yrs  35      3       1    1           1     FALSE         FALSE
+## 6   6-11yrs  36      4       2    1           1     FALSE         FALSE
+\end{verbatim}
+
+The dataset I will be using is from `infert' from package
+`fivethirtyeight'. This data contains information about infertility
+after spontaneous and indiced abortions. As a woman I think it is
+important to know what effects the decisions I make and the options that
+are availble will have on my body in the long run.
+
+I have removed some variables I wasn't interested in and saved the data
+in `abortData'. `abortData' includes the variables `education', `age',
+`parity', `induced', and `spontaneous'. `education' is the categorical
+level of education each subject recieved. `age' is the age of the female
+the data was collected from at the time of collection. `parity' is the
+number of successful births that woman has had. `induced' indicates how
+many induced abortions the subject has undergone. `spontaneous' holds
+the number of spontaneous abortions that occured for that subject.
+Finally, `tfinduced' and `tfspontaneous' are manipulated binary response
+data that indicates whether the subject has undergone an induced
+abortion before or spontaneous abortions before respectively.
+
+There are 248 observations or subjects.
+
+\subsection{1. MANOVA/ANOVA}\label{manovaanova}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(abortData, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ parity, }\DataTypeTok{y =}\NormalTok{ spontaneous)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{geom_density_2d}\NormalTok{(}\DataTypeTok{h =} \DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_fixed}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{education)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-2-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{man1 <-}\StringTok{ }\KeywordTok{manova}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(parity, spontaneous) }\OperatorTok{~}\StringTok{ }\NormalTok{education, }\DataTypeTok{data =}\NormalTok{ abortData)}
+\KeywordTok{summary}\NormalTok{(man1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            Df  Pillai approx F num Df den Df   Pr(>F)    
+## education   2 0.20121   13.703      4    490 1.34e-10 ***
+## Residuals 245                                            
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary.aov}\NormalTok{(man1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Response parity :
+##              Df Sum Sq Mean Sq F value    Pr(>F)    
+## education     2  62.02 31.0119   23.39 5.055e-10 ***
+## Residuals   245 324.84  1.3259                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##  Response spontaneous :
+##              Df  Sum Sq Mean Sq F value Pr(>F)
+## education     2   0.776 0.38784  0.7211 0.4872
+## Residuals   245 131.769 0.53783
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{abortData }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(education) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarize}\NormalTok{(}\KeywordTok{mean}\NormalTok{(parity), }
+    \KeywordTok{mean}\NormalTok{(spontaneous))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 3
+##   education `mean(parity)` `mean(spontaneous)`
+##   <fct>              <dbl>               <dbl>
+## 1 0-5yrs              4.25               0.417
+## 2 6-11yrs             2.1                0.542
+## 3 12+ yrs             1.86               0.629
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pairwise.t.test}\NormalTok{(abortData}\OperatorTok{$}\NormalTok{parity, abortData}\OperatorTok{$}\NormalTok{education, }\DataTypeTok{p.adj =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  abortData$parity and abortData$education 
+## 
+##         0-5yrs  6-11yrs
+## 6-11yrs 2.9e-09 -      
+## 12+ yrs 6.3e-11 0.11   
+## 
+## P value adjustment method: none
+\end{verbatim}
+
+A one-way MANOVA was conducted to determine the effect of education
+level (0-5yrs, 6-11yrs, 12+ yrs) on two dependent variables (parity,
+spontaneous). Examination of bivariate density plots for each group
+revealed that this was not multivariate normality. It is likely that the
+assumptions of multivariate normality has not been met.
+
+Significant differences were found among the three education levels for
+at least one of the dependent variables, Pillali trace = 0.20121, pseudo
+F(4,490)=13.703, p\textless{}0.0001.
+
+Univariate ANOVAs for each dependent variable were conducted as
+follow-up tests to the MANOVA, using the Bonferroni method for
+controlling Type I error rates for multiple comparisons. The univariate
+ANOVA for parity was also significant, F(2,245),p\textless{}0.0001. The
+univariate ANOVA for spontaneous abortions was not significant, F(2,245)
+, p=0.4872.
+
+Post hoc analysis was performed conducting pairwise comparisons to
+determine which education level differed in parity and spontaneous
+abortions. All three education levels were found not to differ
+significantly from each other in terms of parity and induced abortions
+after adjusting for multiple comparisons (bonferroni α = 0.5/6 = 0.083).
+Only 0-5yrs and 6-11yrs appeared to differ significantly.
+
+\subsection{2. Randomization test}\label{randomization-test}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(abortData, }\KeywordTok{aes}\NormalTok{(spontaneous, }\DataTypeTok{fill =}\NormalTok{ tfinduced)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \FloatTok{6.5}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{tfinduced, }\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-3-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mean}\NormalTok{(abortData[abortData}\OperatorTok{$}\NormalTok{tfinduced }\OperatorTok{==}\StringTok{ }\OtherTok{FALSE}\NormalTok{, ]}\OperatorTok{$}\NormalTok{spontaneous) }\OperatorTok{-}\StringTok{ }
+\StringTok{    }\KeywordTok{mean}\NormalTok{(abortData[abortData}\OperatorTok{$}\NormalTok{tfinduced }\OperatorTok{==}\StringTok{ }\OtherTok{TRUE}\NormalTok{, ]}\OperatorTok{$}\NormalTok{spontaneous)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -0.372361
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rand_dist <-}\StringTok{ }\KeywordTok{vector}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{5000}\NormalTok{) \{}
+\NormalTok{    new <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{spontaneous =} \KeywordTok{sample}\NormalTok{(abortData}\OperatorTok{$}\NormalTok{spontaneous), }
+        \DataTypeTok{induced =}\NormalTok{ abortData}\OperatorTok{$}\NormalTok{tfinduced)}
+\NormalTok{    rand_dist[i] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(new[new}\OperatorTok{$}\NormalTok{induced }\OperatorTok{==}\StringTok{ }\OtherTok{FALSE}\NormalTok{, ]}\OperatorTok{$}\NormalTok{spontaneous) }\OperatorTok{-}\StringTok{ }
+\StringTok{        }\KeywordTok{mean}\NormalTok{(new[new}\OperatorTok{$}\NormalTok{induced }\OperatorTok{==}\StringTok{ }\OtherTok{TRUE}\NormalTok{, ]}\OperatorTok{$}\NormalTok{spontaneous)}
+\NormalTok{\}}
+\KeywordTok{hist}\NormalTok{(rand_dist, }\DataTypeTok{main =} \StringTok{""}\NormalTok{, }\DataTypeTok{ylab =} \StringTok{""}\NormalTok{)}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v =} \FloatTok{-0.372361}\NormalTok{, }\DataTypeTok{col =} \StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-3-2} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mean}\NormalTok{(rand_dist }\OperatorTok{>}\StringTok{ }\FloatTok{0.372361} \OperatorTok{|}\StringTok{ }\NormalTok{rand_dist }\OperatorTok{<}\StringTok{ }\FloatTok{-0.372361}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+H0: The mean of spontaneous abortions is the same for women who have
+undergone induced abortions and those who have not. HA: The mean of
+spontaneous abortions is not the same for women who have undergone
+induced abortions and those who have not.
+
+According to this randomization test, we reject the null hypotyesis as p
+\textless{} 0.05, meaning that the mean of spontaneous abortions is not
+the same for women who have undergone induced abortions and those who
+have not.
+
+\subsection{3. Linear Regression Model}\label{linear-regression-model}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(spontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{age }\OperatorTok{+}\StringTok{ }\NormalTok{induced, }\DataTypeTok{data =}\NormalTok{ abortData)}
+\KeywordTok{summary}\NormalTok{(fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = spontaneous ~ age + induced, data = abortData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.9004 -0.5866 -0.2353  0.3624  1.6126 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  1.22991    0.27930   4.404 1.59e-05 ***
+## age         -0.01569    0.00857  -1.831   0.0683 .  
+## induced     -0.27763    0.06094  -4.555 8.25e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7037 on 245 degrees of freedom
+## Multiple R-squared:  0.08463,    Adjusted R-squared:  0.07716 
+## F-statistic: 11.33 on 2 and 245 DF,  p-value: 1.975e-05
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{resids <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(spontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{age }\OperatorTok{+}\StringTok{ }\NormalTok{induced, }\DataTypeTok{data =}\NormalTok{ abortData)}\OperatorTok{$}\NormalTok{residuals}
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(resids), }\DataTypeTok{bins =} \DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-4-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fitted <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(spontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{age }\OperatorTok{+}\StringTok{ }\NormalTok{induced, }\DataTypeTok{data =}\NormalTok{ abortData)}\OperatorTok{$}\NormalTok{fitted.values}
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(resids, fitted))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-4-2} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_qq}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{sample =}\NormalTok{ resids)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_qq_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{sample =}\NormalTok{ resids), }
+    \DataTypeTok{color =} \StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-4-3} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{resids <-}\StringTok{ }\NormalTok{fit}\OperatorTok{$}\NormalTok{residuals}
+\NormalTok{fitvals <-}\StringTok{ }\NormalTok{fit}\OperatorTok{$}\NormalTok{fitted.values}
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(fitvals, resids)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept =} \DecValTok{0}\NormalTok{, }
+    \DataTypeTok{color =} \StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-4-4} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(resids), }\DataTypeTok{bins =} \DecValTok{20}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-4-5} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(sandwich)}
+\KeywordTok{library}\NormalTok{(lmtest)}
+\KeywordTok{bptest}\NormalTok{(fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 15.341, df = 2, p-value = 0.0004664
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(fit)}\OperatorTok{$}\NormalTok{coef[, }\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                Estimate  Std. Error
+## (Intercept)  1.22990839 0.279297927
+## age         -0.01569109 0.008569922
+## induced     -0.27762548 0.060945362
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{coeftest}\NormalTok{(fit, }\DataTypeTok{vcov =} \KeywordTok{vcovHC}\NormalTok{(fit))[, }\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                Estimate  Std. Error
+## (Intercept)  1.22990839 0.260095973
+## age         -0.01569109 0.008104023
+## induced     -0.27762548 0.050679521
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}\KeywordTok{sum}\NormalTok{((abortData}\OperatorTok{$}\NormalTok{spontaneous }\OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(abortData}\OperatorTok{$}\NormalTok{spontaneous))}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{-}\StringTok{ }
+\StringTok{    }\KeywordTok{sum}\NormalTok{(fit}\OperatorTok{$}\NormalTok{residuals}\OperatorTok{^}\DecValTok{2}\NormalTok{))}\OperatorTok{/}\KeywordTok{sum}\NormalTok{((abortData}\OperatorTok{$}\NormalTok{spontaneous }\OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(abortData}\OperatorTok{$}\NormalTok{spontaneous))}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.08463146
+\end{verbatim}
+
+Controlling for induced abortions, there is not a significant effect of
+age on spontaneous abortions, t=-1.843, df = 245, p = 0.06655. However,
+controlling for age, there is a significant effect of induced abortions
+on spontaneous abortions. For every one unit increase of induced
+abortions, spontaneous abortions increases 0.39123 abortions on average,
+t=4.279, df = 245, p \textless{}0.001.
+
+The assumptions of linearity, normality, and homoskedasticity are all
+not applicable according to the graphs.
+
+All the standard errors decreased when recomputed with corrected SEs. It
+is significant because this data presents a violation of
+homoskedasticity.
+
+The proportion of the variation in spontaneous abortions that can be
+explained by the overall model with all predicters at once is 0.0761.
+
+\subsection{4. Bootstrapped Standard
+Errors}\label{bootstrapped-standard-errors}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{samp_distn <-}\StringTok{ }\KeywordTok{replicate}\NormalTok{(}\DecValTok{5000}\NormalTok{, \{}
+\NormalTok{    boot_dat <-}\StringTok{ }\KeywordTok{sample_frac}\NormalTok{(abortData, }\DataTypeTok{replace =}\NormalTok{ T)}
+\NormalTok{    fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(spontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{age }\OperatorTok{+}\StringTok{ }\NormalTok{induced, }\DataTypeTok{data =}\NormalTok{ boot_dat)}
+    \KeywordTok{coef}\NormalTok{(fit)}
+\NormalTok{\})}
+
+\NormalTok{samp_distn }\OperatorTok{%>%}\StringTok{ }\NormalTok{t }\OperatorTok{%>%}\StringTok{ }\NormalTok{as.data.frame }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarize_all}\NormalTok{(sd)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   (Intercept)        age    induced
+## 1   0.2572103 0.00801009 0.05029313
+\end{verbatim}
+
+The bootstrapped SEs are less than the original SEs but greater than the
+corrected robust SEs.
+
+\subsection{5. Logistic Regression}\label{logistic-regression}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(tfspontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{parity }\OperatorTok{+}\StringTok{ }\NormalTok{induced, }\DataTypeTok{data =}\NormalTok{ abortData, }
+    \DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{"logit"}\NormalTok{))}
+\KeywordTok{coeftest}\NormalTok{(fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## z test of coefficients:
+## 
+##             Estimate Std. Error z value  Pr(>|z|)    
+## (Intercept)  1.30752    0.29435  4.4421 8.910e-06 ***
+## parity      -0.89937    0.16000 -5.6209 1.900e-08 ***
+## induced      1.58667    0.27680  5.7322 9.914e-09 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{exp}\NormalTok{(}\KeywordTok{coef}\NormalTok{(fit))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (Intercept)      parity     induced 
+##   3.6969766   0.4068277   4.8874659
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prob <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(prob }\OperatorTok{>}\StringTok{ }\FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\KeywordTok{table}\NormalTok{(}\DataTypeTok{prediction =}\NormalTok{ pred, }\DataTypeTok{truth =}\NormalTok{ abortData}\OperatorTok{$}\NormalTok{tfspontaneous) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\NormalTok{addmargins}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           truth
+## prediction FALSE TRUE Sum
+##        0      54   29  83
+##        1      53  112 165
+##        Sum   107  141 248
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}\DecValTok{54} \OperatorTok{+}\StringTok{ }\DecValTok{112}\NormalTok{)}\OperatorTok{/}\DecValTok{248}  \CommentTok{#accuracy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.6693548
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DecValTok{112}\OperatorTok{/}\DecValTok{141}  \CommentTok{#tpr}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.7943262
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DecValTok{54}\OperatorTok{/}\DecValTok{107}  \CommentTok{#tnr}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.5046729
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DecValTok{54}\OperatorTok{/}\DecValTok{83}  \CommentTok{#ppv}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.6506024
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{abortData}\OperatorTok{$}\NormalTok{logit <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{type =} \StringTok{"link"}\NormalTok{)}
+\NormalTok{abortData }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_density}\NormalTok{(}\KeywordTok{aes}\NormalTok{(logit, }\DataTypeTok{color =}\NormalTok{ tfspontaneous, }
+    \DataTypeTok{fill =}\NormalTok{ tfspontaneous), }\DataTypeTok{alpha =} \FloatTok{0.4}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.85}\NormalTok{, }
+    \FloatTok{0.85}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"logit (log-odds)"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{geom_rug}\NormalTok{(}\KeywordTok{aes}\NormalTok{(logit, }\DataTypeTok{color =}\NormalTok{ tfspontaneous)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{x =} \DecValTok{-2}\NormalTok{, }
+    \DataTypeTok{y =} \FloatTok{0.07}\NormalTok{, }\DataTypeTok{label =} \StringTok{"TN = 29"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{x =} \FloatTok{-1.75}\NormalTok{, }\DataTypeTok{y =} \FloatTok{0.008}\NormalTok{, }
+    \DataTypeTok{label =} \StringTok{"FN = 54"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{x =} \DecValTok{1}\NormalTok{, }\DataTypeTok{y =} \FloatTok{0.006}\NormalTok{, }\DataTypeTok{label =} \StringTok{"FP = 53"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{x =} \DecValTok{2}\NormalTok{, }\DataTypeTok{y =} \FloatTok{0.07}\NormalTok{, }\DataTypeTok{label =} \StringTok{"TP = 112"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-6-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(plotROC)}
+
+
+\NormalTok{ROCplot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(abortData) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_roc}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{d =}\NormalTok{ tfspontaneous, }
+    \DataTypeTok{m =}\NormalTok{ prob), }\DataTypeTok{n.cuts =} \DecValTok{0}\NormalTok{)}
+
+\NormalTok{ROCplot}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Project-1_files/figure-latex/unnamed-chunk-6-2} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{calc_auc}\NormalTok{(ROCplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   PANEL group       AUC
+## 1     1    -1 0.7565454
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(pROC)}
+
+\NormalTok{class_diag <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(probs, truth) \{}
+    \CommentTok{# CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV}
+\NormalTok{    tab <-}\StringTok{ }\KeywordTok{table}\NormalTok{(}\KeywordTok{factor}\NormalTok{(probs }\OperatorTok{>}\StringTok{ }\FloatTok{0.5}\NormalTok{, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"FALSE"}\NormalTok{, }\StringTok{"TRUE"}\NormalTok{)), }
+\NormalTok{        truth)}
+\NormalTok{    acc =}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{diag}\NormalTok{(tab))}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(tab)}
+\NormalTok{    sens =}\StringTok{ }\NormalTok{tab[}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{colSums}\NormalTok{(tab)[}\DecValTok{2}\NormalTok{]}
+\NormalTok{    spec =}\StringTok{ }\NormalTok{tab[}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{]}\OperatorTok{/}\KeywordTok{colSums}\NormalTok{(tab)[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    ppv =}\StringTok{ }\NormalTok{tab[}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{rowSums}\NormalTok{(tab)[}\DecValTok{2}\NormalTok{]}
+    \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{is.numeric}\NormalTok{(truth) }\OperatorTok{==}\StringTok{ }\OtherTok{FALSE} \OperatorTok{&}\StringTok{ }\KeywordTok{is.logical}\NormalTok{(truth) }\OperatorTok{==}\StringTok{ }\OtherTok{FALSE}\NormalTok{) }
+\NormalTok{        truth <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(truth) }\OperatorTok{-}\StringTok{ }\DecValTok{1}
+    \CommentTok{# CALCULATE EXACT AUC}
+\NormalTok{    ord <-}\StringTok{ }\KeywordTok{order}\NormalTok{(probs, }\DataTypeTok{decreasing =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{    probs <-}\StringTok{ }\NormalTok{probs[ord]}
+\NormalTok{    truth <-}\StringTok{ }\NormalTok{truth[ord]}
+\NormalTok{    TPR =}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(truth)}\OperatorTok{/}\KeywordTok{max}\NormalTok{(}\DecValTok{1}\NormalTok{, }\KeywordTok{sum}\NormalTok{(truth))}
+\NormalTok{    FPR =}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(}\OperatorTok{!}\NormalTok{truth)}\OperatorTok{/}\KeywordTok{max}\NormalTok{(}\DecValTok{1}\NormalTok{, }\KeywordTok{sum}\NormalTok{(}\OperatorTok{!}\NormalTok{truth))}
+\NormalTok{    dup <-}\StringTok{ }\KeywordTok{c}\NormalTok{(probs[}\OperatorTok{-}\DecValTok{1}\NormalTok{] }\OperatorTok{>=}\StringTok{ }\NormalTok{probs[}\OperatorTok{-}\KeywordTok{length}\NormalTok{(probs)], }\OtherTok{FALSE}\NormalTok{)}
+\NormalTok{    TPR <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, TPR[}\OperatorTok{!}\NormalTok{dup], }\DecValTok{1}\NormalTok{)}
+\NormalTok{    FPR <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, FPR[}\OperatorTok{!}\NormalTok{dup], }\DecValTok{1}\NormalTok{)}
+\NormalTok{    n <-}\StringTok{ }\KeywordTok{length}\NormalTok{(TPR)}
+\NormalTok{    auc <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(((TPR[}\OperatorTok{-}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{TPR[}\OperatorTok{-}\NormalTok{n])}\OperatorTok{/}\DecValTok{2}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(FPR[}\OperatorTok{-}\DecValTok{1}\NormalTok{] }\OperatorTok{-}\StringTok{ }\NormalTok{FPR[}\OperatorTok{-}\NormalTok{n]))}
+    \KeywordTok{data.frame}\NormalTok{(acc, sens, spec, ppv, auc)}
+\NormalTok{\}}
+
+\NormalTok{probs <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
+\KeywordTok{class_diag}\NormalTok{(probs, abortData}\OperatorTok{$}\NormalTok{tfspontaneous)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            acc      sens      spec       ppv       auc
+## TRUE 0.6693548 0.7943262 0.5046729 0.6787879 0.7565454
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+\NormalTok{k =}\StringTok{ }\DecValTok{10}
+\NormalTok{data <-}\StringTok{ }\NormalTok{abortData[}\KeywordTok{sample}\NormalTok{(}\KeywordTok{nrow}\NormalTok{(abortData)), ]}
+\NormalTok{folds <-}\StringTok{ }\KeywordTok{cut}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(abortData)), }\DataTypeTok{breaks =}\NormalTok{ k, }\DataTypeTok{labels =}\NormalTok{ F)}
+\NormalTok{diags <-}\StringTok{ }\OtherTok{NULL}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{k) \{}
+\NormalTok{    train <-}\StringTok{ }\NormalTok{data[folds }\OperatorTok{!=}\StringTok{ }\NormalTok{i, ]}
+\NormalTok{    test <-}\StringTok{ }\NormalTok{data[folds }\OperatorTok{==}\StringTok{ }\NormalTok{i, ]}
+\NormalTok{    truth <-}\StringTok{ }\NormalTok{test}\OperatorTok{$}\NormalTok{tfspontaneous}
+\NormalTok{    fit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(tfspontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{(.)}\OperatorTok{^}\DecValTok{2}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ abortData, }\DataTypeTok{family =} \StringTok{"binomial"}\NormalTok{)}
+\NormalTok{    probs <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{newdata =}\NormalTok{ test, }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{    diags <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(diags, }\KeywordTok{class_diag}\NormalTok{(probs, truth))}
+\NormalTok{\}}
+\KeywordTok{summarize_all}\NormalTok{(diags, mean)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   acc sens spec ppv auc
+## 1   1    1    1   1   1
+\end{verbatim}
+
+Controlling for induced abortions, parity has a significant negative
+impact on if spontaneous abortions has occured. Controlling for parity,
+induced abortions has a significant positive impact on if spontaneous
+abortions has occured.
+
+Interpretation of the coefficients are that the intercept shows the odds
+for spontaneous abortion when parity = 0 and induced abortion = 0 is
+3.6969766. Controlling for induced abortions, for each additional
+successful birth (parity), the odds of an spontaneous abortion increase
+by a factor of 0.4068277 (significant). Controlling for parity, for each
+additional induced abortion, the odds of a spontaneous abortion increase
+by a factor of 4.8874659.
+
+According to the confusion matrix, the overall accuracy (the proportion
+of correctly predicted cases) is 0.6693548, the sensitivity(the
+proportion of the occurance of spontaneous abortions correctly
+predicted) is 0.7943262, the specificity (the proportion of the
+spontaneous abortions not occuring correctly predicted) is 0.5046729,
+and precision (the proportion of predictions for spontaneous abortions
+occuring and actually having occured) is 0.6506024.
+
+According to the ROC curve and the AUC calcualtion, on average, 75.65\%
+of the time a subject with a higher predicted probability for
+spontaneous abortions will have spontaneous abortions.
+
+Though it is a little odd, I got 1 for average out of sample Accuracy,
+Sensitivity, and Recall. This means both insample and out of sample
+performance is amazing and we are not overfitting.
+
+\subsection{6. Prediction and LASSO}\label{prediction-and-lasso}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(glmnet)}
+\NormalTok{y <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(abortData}\OperatorTok{$}\NormalTok{tfspontaneous)}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{model.matrix}\NormalTok{(tfspontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =} \KeywordTok{select}\NormalTok{(abortData, }
+    \OperatorTok{-}\NormalTok{tfinduced, }\OperatorTok{-}\NormalTok{spontaneous, }\OperatorTok{-}\NormalTok{logit))[, }\DecValTok{-1}\NormalTok{]}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(x)}
+\KeywordTok{head}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   education6-11yrs education12+ yrs        age     parity  induced
+## 1       -0.9662918        -0.935545 -1.0480747  3.1220494 0.578801
+## 2       -0.9662918        -0.935545  1.9986363 -0.8731428 0.578801
+## 3       -0.9662918        -0.935545  1.4273780  3.1220494 1.932977
+## 4       -0.9662918        -0.935545  0.4752808  1.5239725 1.932977
+## 5        1.0307112        -0.935545  0.6657002  0.7249341 0.578801
+## 6        1.0307112        -0.935545  0.8561197  1.5239725 1.932977
+##       case
+## 1 1.407102
+## 2 1.407102
+## 3 1.407102
+## 4 1.407102
+## 5 1.407102
+## 6 1.407102
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cv <-}\StringTok{ }\KeywordTok{cv.glmnet}\NormalTok{(x, y, }\DataTypeTok{family =} \StringTok{"binomial"}\NormalTok{)}
+\NormalTok{lasso <-}\StringTok{ }\KeywordTok{glmnet}\NormalTok{(x, y, }\DataTypeTok{family =} \StringTok{"binomial"}\NormalTok{, }\DataTypeTok{lambda =}\NormalTok{ cv}\OperatorTok{$}\NormalTok{lambda}\FloatTok{.1}\NormalTok{se)}
+\KeywordTok{coef}\NormalTok{(lasso)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 7 x 1 sparse Matrix of class "dgCMatrix"
+##                          s0
+## (Intercept)       0.3447217
+## education6-11yrs  .        
+## education12+ yrs -0.2297885
+## age               0.3655342
+## parity           -1.0463871
+## induced           1.0778952
+## case             -0.7257567
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+\NormalTok{k =}\StringTok{ }\DecValTok{10}
+\NormalTok{data <-}\StringTok{ }\NormalTok{abortData }\OperatorTok{%>%}\StringTok{ }\NormalTok{sample_frac}
+\NormalTok{folds <-}\StringTok{ }\KeywordTok{ntile}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(data), }\DataTypeTok{n =} \DecValTok{10}\NormalTok{)}
+\NormalTok{diags <-}\StringTok{ }\OtherTok{NULL}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{k) \{}
+\NormalTok{    train <-}\StringTok{ }\NormalTok{data[folds }\OperatorTok{!=}\StringTok{ }\NormalTok{i, ]}
+\NormalTok{    test <-}\StringTok{ }\NormalTok{data[folds }\OperatorTok{==}\StringTok{ }\NormalTok{i, ]}
+\NormalTok{    truth <-}\StringTok{ }\NormalTok{test}\OperatorTok{$}\NormalTok{tfspontaneous}
+\NormalTok{    fit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(tfspontaneous }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ train, }\DataTypeTok{family =} \StringTok{"binomial"}\NormalTok{)}
+\NormalTok{    probs <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{newdata =}\NormalTok{ test, }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{    diags <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(diags, }\KeywordTok{class_diag}\NormalTok{(probs, truth))}
+\NormalTok{\}}
+\NormalTok{diags }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarize_all}\NormalTok{(mean)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   acc sens spec ppv auc
+## 1   1    1    1   1   1
+\end{verbatim}
+
+First, I removed variables that were redundant (generated only to
+fulfill binary type data for previous section) and extraneous
+data(logit).
+
+Interestingly, all variables except `education 6-11yrs' was retained.
+This means that `education12+yrs', `age', `parity', `induced', and
+`case'.
+
+Again the accuracy was 1 meaning it also is a very good fit. I am unsure
+which is considered better or if this is an error/bad data for Lasso and
+Logistic Regression.
+
+
+\end{document}
